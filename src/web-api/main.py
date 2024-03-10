@@ -1,13 +1,18 @@
 import json
-
 from flask import Flask
-from src.application.input import read_input_file
+from src.application.database import Database
 
 app = Flask(__name__)
 
-
 @app.route("/cards")
-def get_cards():
-    cards = read_input_file('example_words.csv')
+def return_cards():
+    database = Database()
+    all_cards = database.get_cards()
+    return json.dumps(all_cards)
 
-    return json.dumps([obj.__dict__ for obj in cards])
+
+# @app.route("/card", method = POST)
+# def get_cards():
+#     database.delete_card(id)
+#
+#     return
