@@ -16,18 +16,24 @@ def return_cards():
 
 @app.route("/card/<card_id>", methods = ['DELETE'])
 def delete_card(card_id):
-    card_to_delete = Card.query.get_or_404(card_id)
+    card_to_delete = Card.query.get(card_id)
     db.session.delete(card_to_delete)
     db.session.commit()
     return "Card deleted", 200
 
 @app.route("/card", methods= ['POST'])
 def add_card():
-    if request.method == 'POST':
-        body = request.get_json()
-        foreign_word = body['foreign_word']
-        translated_word = body['translated_word']
-        new_card = Card(translated_word, foreign_word)
-        db.session.add(new_card)
-        db.session.commit()
-        return "Card sucesfully added", 200
+    body = request.get_json()
+    new_card = Card(body['foreign_word'], body['translated_word'])
+    db.session.add(new_card)
+    db.session.commit()
+    return "Card sucesfully added", 200
+
+@app.route("/card/<card_id>", methods=['PUT'])
+def edit_card(card_id):
+    body = request.get_json()
+    card_to_edit = Card.query.get(card_id)
+    card_to_edit.foreign_word = body['foreign_word']
+    card_to_edit.translated_word = body['translated_word']
+    db.session.commit()
+    return "Card edited", 200
