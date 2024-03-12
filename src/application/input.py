@@ -11,7 +11,7 @@ def read_input_file(input_data):
     try:
         with open(file_path, 'r') as f:
             lines = f.readlines()
-            for line in lines: # change to ':'
+            for line in lines:
                 if " - " in line:
                     word_pair = line.strip().split('-')
                     foreign_word = word_pair[0].strip()
