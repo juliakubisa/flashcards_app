@@ -14,8 +14,8 @@ def read_input_file(input_data):
             for line in lines: # change to ':'
                 if " - " in line:
                     word_pair = line.strip().split('-')
-                    foreign_word = word_pair[0]
-                    translated_word = word_pair[1]
+                    foreign_word = word_pair[0].strip()
+                    translated_word = word_pair[1].strip()
                     card = Card(foreign_word, translated_word)
                     cards_unknown.append(card)
                 else:
