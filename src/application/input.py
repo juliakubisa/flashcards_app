@@ -2,14 +2,12 @@ import os
 from src.application.card import Card
 import toolz
 cards_unknown = []
+import csv
 
 
 def read_input_file(input_data):
-    current_directory = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(current_directory, input_data)
-
     try:
-        with open(file_path, 'r') as f:
+        with open(input_data, 'r') as f:
             lines = f.readlines()
             for line in lines:
                 if " - " in line:

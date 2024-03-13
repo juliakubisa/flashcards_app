@@ -1,10 +1,14 @@
 from flask import *
 from src.application.card import Card
 from src.application.sql_database import db
+from src.application.utils import allowed_file_extension
+from src.application.input import read_input_file
+from io import TextIOWrapper
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flashcards.db'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000 # restrict max size to 16MB
 db.init_app(app)
 
 
@@ -43,3 +47,19 @@ def edit_card(card_id):
     card_to_edit.translated_word = body['translated_word']
     db.session.commit()
     return "Card edited", 200
+
+@app.route("/card/file", methods=['POST'])
+def upload_cards_from_csv():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return 'No selected file', 400
+        file = request.files['file']
+        if file.filename == '':
+            return 'No selected file', 400
+        if file and allowed_file_extension(file.filename):
+            csv_file = TextIOWrapper(file.stream, encoding='utf-8')
+            cards_unknown_unique = read_input_file(csv_file)
+            print([x for x in cards_unknown_unique])
+            db.session.add_all(cards_unknown_unique)
+            db.session.commit()
+            return 'Cards added', 200
