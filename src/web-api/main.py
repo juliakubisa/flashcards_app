@@ -9,7 +9,15 @@ from io import TextIOWrapper
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flashcards.db'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000 # restrict max size to 16MB
-db.init_app(app)
+# db.init_app(app)
+
+# Create database with csv file from the disk
+with app.app_context():
+    db.init_app(app)
+    db.create_all()
+    all_cards = db.session.query(Card).all()
+    db.session.add_all(all_cards)
+    db.session.commit()
 
 
 @app.route("/cards")
@@ -57,9 +65,9 @@ def upload_cards_from_csv():
         if file.filename == '':
             return 'No selected file', 400
         if file and allowed_file_extension(file.filename):
-            csv_file = TextIOWrapper(file.stream, encoding='utf-8')
-            cards_unknown_unique = read_input_file(csv_file)
-            print([x for x in cards_unknown_unique])
+            # csv_file = file.stream
+            # csv_file = TextIOWrapper(file.stream, encoding='utf-8')
+            cards_unknown_unique = read_input_file(file)
             db.session.add_all(cards_unknown_unique)
             db.session.commit()
             return 'Cards added', 200
