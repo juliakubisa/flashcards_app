@@ -17,10 +17,14 @@ def clean_csv(csv_file):
                 pass
     return csv_lines
 
+# cleaned_csv = clean_csv('example_words.csv')
+# print(cleaned_csv)
+
 def write_csv(data):
     with open('example_csv2.csv', 'w') as f:
         csvwriter = csv.writer(f, delimiter = "-")
         csvwriter.writerows(data)
 
+# write_csv(cleaned_csv)
 
 

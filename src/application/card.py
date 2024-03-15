@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 @dataclass
 class Card(db.Model):
-    is_known = False
     id: Mapped[int] = mapped_column(primary_key= True)
     foreign_word: Mapped[str] = mapped_column()
     translated_word: Mapped[str] = mapped_column()
@@ -13,6 +12,3 @@ class Card(db.Model):
     def __init__(self, foreign_word, translated_word):
         self.foreign_word = foreign_word
         self.translated_word = translated_word
-
-    def set_as_known(self):
-        self.is_known = True
