@@ -1,16 +1,20 @@
 from flask import *
+import os
+from io import TextIOWrapper
 from src.application.card import Card
 from src.application.sql_database import db
 from src.application.utils import allowed_file_extension
 from src.application.input import read_input_file
-from io import TextIOWrapper
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flashcards.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_CONNECTION_STRING']
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000 # restrict max size to 16MB
+
 db.init_app(app)
 
+with app.app_context():
+    db.create_all()
 
 @app.route("/cards")
 def return_cards():

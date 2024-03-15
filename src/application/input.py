@@ -28,6 +28,6 @@ def read_input_file(input_data):
     return cards_unknown_unique
 
 
-cards_unknown_unique = read_input_file('example_csv2.csv')
-print([x for x in cards_unknown_unique])
+# cards_unknown_unique = read_input_file('example_csv2.csv')
+# print([x for x in cards_unknown_unique])
 # if __name__ == '__main__':
