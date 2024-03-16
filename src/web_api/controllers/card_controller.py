@@ -1,5 +1,6 @@
 from flask import *
 from io import TextIOWrapper
+from sqlalchemy import exists
 from src.application.card import Card
 from src.application.sql_database import db
 from src.application.utils import allowed_file_extension
@@ -23,10 +24,10 @@ def delete_card(card_id):
 @card_controller.route("/card", methods= ['POST'])
 def add_card():
     body = request.get_json()
-    existing_card = (db.session.query(Card)
-                    .filter_by(foreign_word=body['foreign_word']
-                                , translated_word=body['translated_word']))
-    if existing_card is None:
+    does_card_exist = db.session.query(exists().where(Card.foreign_word == body['foreign_word']).
+                           where(Card.translated_word == body['translated_word'])).scalar()
+
+    if does_card_exist is False:
         new_card = Card(body['foreign_word'], body['translated_word'])
         db.session.add(new_card)
         db.session.commit()

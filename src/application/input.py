@@ -1,4 +1,3 @@
-import os
 from src.application.card import Card
 import toolz
 cards_unknown = []
