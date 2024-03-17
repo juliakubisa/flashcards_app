@@ -4,22 +4,19 @@ cards_unknown = []
 import csv
 
 def read_input_file(input_data):
-    try:
-        reader = csv.DictReader(input_data)
-        data = [row for row in reader]
-        for row in data:
-            foreign_word = row[0].strip().replace('"', '')
-            translated_word = row[1].strip().replace('"', '')
-            card = Card(foreign_word, translated_word)
-            cards_unknown.append(card)
-    except:
-        print('Upload the file in the right format')
+    for line in input_data:
+        if " - " in line:
+            try:
+                word_pair = line.strip().split("-")
+                foreign_word = word_pair[0].replace('"', '')
+                translated_word = word_pair[1].replace('"', '')
+                card = Card(foreign_word, translated_word)
+                cards_unknown.append(card)
+            except:
+                print('Upload the file in the right format')
 
     # delete duplicate words and translations
     cards_unknown_unique = toolz.unique(cards_unknown, key = lambda x: x.foreign_word + x.translated_word)
     return cards_unknown_unique
 
-
-# cards_unknown_unique = read_input_file('example_csv2.csv')
-# print([x for x in cards_unknown_unique])
-# if __name__ == '__main__':
+    # if __name__ == '__main__':

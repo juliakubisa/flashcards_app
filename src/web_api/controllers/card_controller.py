@@ -1,5 +1,5 @@
 from flask import *
-from io import TextIOWrapper
+from io import StringIO
 from sqlalchemy import exists
 from src.application.card import Card
 from src.application.sql_database import db
@@ -38,13 +38,18 @@ def add_card():
 @card_controller.route("/card/<card_id>", methods=['PUT'])
 def edit_card(card_id):
     body = request.get_json()
-    card_to_edit = Card.query.get(card_id)
-    card_to_edit.foreign_word = body['foreign_word']
-    card_to_edit.translated_word = body['translated_word']
-    db.session.commit()
-    return "Card edited", 200
+    does_card_exist = db.session.query(exists().where(Card.foreign_word == body['foreign_word']).
+                                       where(Card.translated_word == body['translated_word'])).scalar()
+    if does_card_exist == False:
+        card_to_edit = Card.query.get(card_id)
+        card_to_edit.foreign_word = body['foreign_word']
+        card_to_edit.translated_word = body['translated_word']
+        db.session.commit()
+        return "Card edited", 200
+    else:
+        return "Card with these parameters already exists!", 409
 
-@card_controller.route("/card/file", methods=['POST'])
+@card_controller.route("/card/file", methods=['GET', 'POST'])
 def upload_cards_from_csv():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -53,9 +58,8 @@ def upload_cards_from_csv():
         if file.filename == '':
             return 'No selected file', 400
         if file and allowed_file_extension(file.filename):
-            # csv_file = file.stream
-            # csv_file = TextIOWrapper(file.stream, encoding='utf-8')
-            cards_unknown_unique = read_input_file(file)
+            csv_data = StringIO(file.stream.read().decode("UTF8"), newline=None)
+            cards_unknown_unique = read_input_file(csv_data)
             db.session.add_all(cards_unknown_unique)
             db.session.commit()
             return 'Cards added', 200
