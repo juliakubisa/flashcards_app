@@ -26,14 +26,16 @@ def add_card():
     body = request.get_json()
     does_card_exist = db.session.query(exists().where(Card.foreign_word == body['foreign_word']).
                            where(Card.translated_word == body['translated_word'])).scalar()
-
-    if does_card_exist is False:
+    if does_card_exist is False and body['foreign_word'] and body['translated_word']:
         new_card = Card(body['foreign_word'], body['translated_word'])
         db.session.add(new_card)
         db.session.commit()
         return "Card sucesfully added", 200
-    else:
+    elif does_card_exist:
         return "This card already exists!", 409
+    else:
+        return "The fields cannot be empty", 400
+
 
 @card_controller.route("/card/<card_id>", methods=['PUT'])
 def edit_card(card_id):
