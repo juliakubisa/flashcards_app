@@ -3,7 +3,7 @@ from io import StringIO
 from sqlalchemy import exists
 from src.application.card import Card
 from src.application.sql_database import db
-from src.application.utils import allowed_file_extension
+from src.application.utils import allowed_file_extension, max_dict_value_len
 from src.application.input import read_input_file
 
 card_controller = Blueprint('card_controller', __name__)
@@ -24,15 +24,24 @@ def delete_card(card_id):
 @card_controller.route("/card", methods= ['POST'])
 def add_card():
     body = request.get_json()
+    max_foreign_len = max_dict_value_len(100, "foreign_word", body)
+    max_transl_len = max_dict_value_len(100, "translated_word", body)
     does_card_exist = db.session.query(exists().where(Card.foreign_word == body['foreign_word']).
                            where(Card.translated_word == body['translated_word'])).scalar()
-    if does_card_exist is False and body['foreign_word'] and body['translated_word']:
+    if (does_card_exist is False and body['foreign_word'] and body['translated_word']
+            and max_foreign_len and max_transl_len):
         new_card = Card(body['foreign_word'], body['translated_word'])
         db.session.add(new_card)
         db.session.commit()
         return "Card sucesfully added", 200
     elif does_card_exist:
         return "This card already exists!", 409
+    elif max_foreign_len is False and max_transl_len is False:
+        return "Input is too long", 400
+    elif max_transl_len is False and max_foreign_len:
+        return "Translated Word is too long", 400
+    elif max_foreign_len is False and max_transl_len:
+        return "Foreign Word is too long", 400
     else:
         return "The fields cannot be empty", 400
 
