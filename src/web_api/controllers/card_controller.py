@@ -3,7 +3,7 @@ from io import StringIO
 from sqlalchemy import exists, not_
 from src.application.card import Card
 from src.application.sql_database import db
-from src.application.utils import allowed_file_extension, max_dict_value_len
+from src.application.utils import allowed_file_extension
 from src.application.input import read_input_file
 from src.web_api.controllers.utils import edit_add_card_conditions
 
@@ -40,7 +40,6 @@ def add_card():
         return condition, 400 if new_card is None else 409
 
 
-
 @card_controller.route("/card/<card_id>", methods=['PUT'])
 def edit_card(card_id):
     body = request.get_json()
@@ -58,7 +57,8 @@ def edit_card(card_id):
     else:
         return condition, 409
 
-@card_controller.route("/card/file", methods=['GET', 'POST'])
+
+@card_controller.route("/card/file", methods=['POST'])
 def upload_cards_from_csv():
     if request.method == 'POST':
         if 'file' not in request.files:
