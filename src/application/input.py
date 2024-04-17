@@ -8,8 +8,8 @@ def read_input_file(input_data):
         if " - " in line:
             try:
                 word_pair = line.strip().split("-")
-                foreign_word = word_pair[0].replace('"', '')
-                translated_word = word_pair[1].replace('"', '')
+                foreign_word = word_pair[0].replace('"', '').strip()
+                translated_word = word_pair[1].replace('"', '').strip()
                 card = Card(foreign_word, translated_word)
                 cards_unknown.append(card)
             except:

@@ -1,6 +1,8 @@
 from flask import *
 from io import StringIO
 from sqlalchemy import exists, not_
+
+from src.application.algorithm import Algorithm
 from src.application.card import Card
 from src.application.sql_database import db
 from src.application.utils import allowed_file_extension
@@ -72,3 +74,12 @@ def upload_cards_from_csv():
             db.session.add_all(cards_unknown_unique)
             db.session.commit()
             return 'Cards added', 200
+
+
+@card_controller.route("/quiz/cards", methods=['GET'])
+def return_quiz_cards():
+    all_cards = db.session.query(Card).all()
+    # quiz_cards = cards_to_quiz(all_cards)
+    algorithm = Algorithm()
+    algorithm.set_weights(all_cards[0], all_cards)
+    return jsonify(all_cards)
