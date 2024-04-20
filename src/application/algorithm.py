@@ -1,47 +1,46 @@
-import statistics
-
-
-class AlgorithmVariables:
-    """Specifies  the variables that will be used in the algorithm"""
-    def __init__(self):
-        self.days_since_last_review = 0
-        self.number_correct_answers = 0
-        self.answer_time = 0
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from src.application.card import Card
 
 
 class Algorithm:
     """easiness = -A*days_since_last_review + B*last_review_correct +
             C*number_correct_answers + D*answer_time
         where A, B, C, D are weights"""
-    def __init__(self):
-        self.easiness_factor = 0
 
-    def set_weights(self, card, cards):
-        values = self.standarize_values(card, cards)
-        last_answer_correct = -1 if not card.last_answer_correct else 1
+    def __init__(self, cards):
+        self.df = pd.DataFrame([c.__dict__ for c in cards])
+        self.standarize_variables_list = ['days_since_last_review', 'number_correct_answers', 'answer_time']
+        self.standarized_variables_list = ['days_since_last_review_s', 'number_correct_answers_s', 'answer_time_s']
 
-        days_since_last_review_weight = -0.25
-        last_answer_correct_weight = 0.25
-        number_correct_answers_weight = 0.25
-        answer_time_weight = -0.25
+    def set_weights(self):
+        self.df['last_answer_correct'] = np.where(self.df['last_answer_correct'] is False, 1, -1)
+        self.standarize_values()
+        weights = [-0.25, 0.25, 0.25, -0.25]
 
-        self.easiness_factor = (last_answer_correct_weight * last_answer_correct
-                                + number_correct_answers_weight * values.number_correct_answers
-                                + answer_time_weight * values.answer_time)
-        card.easiness_factor = self.calculate_new_easiness(card)
+        self.df['new_easiness'] = (weights[1] * self.df['last_answer_correct']
+                                   + weights[2] * self.df['number_correct_answers_s']
+                                   + weights[3] * self.df['answer_time_s'])
 
-    def standarize_values(self, card, cards):
-        algorithm_variables = AlgorithmVariables()
-        variables_names = algorithm_variables.__dict__.keys()
 
-        for name in variables_names:
-            std_val = statistics.stdev((getattr(c, name) for c in cards))
-            mean_val = statistics.mean((getattr(c, name) for c in cards))
-            setattr(algorithm_variables, name, ((getattr(card, name) - std_val) / mean_val))
-        return algorithm_variables
+    def standarize_values(self):
+        """Z = (X − µ)/σ where X is the variable from list, µ is the column mean and σ is column standard deviation"""
+        scaler = StandardScaler()
+        self.df[self.standarized_variables_list] = scaler.fit_transform(self.df[self.standarize_variables_list])
 
-    def calculate_new_easiness(self, card):
-        current_easiness = card.easiness_factor
-        new_easiness_factor = self.easiness_factor
-        return new_easiness_factor
+    def adjust_easiness(self):
+        """Apply algorithmic mean between old and new easiness factor to adjust it
+        where adjusted_easiness = 1/2(old_easiness+new_easiness)"""
+        self.df.loc[self.df['new_easiness'] < 0, 'new_easiness'] = 0
+        self.df['easiness_factor'] = round((self.df['easiness_factor'] + self.df['new_easiness']) / 2, 3)
 
+    def select_quiz_cards(self):
+        self.adjust_easiness()
+        self.df['probability'] = (self.df['easiness_factor'] / self.df['easiness_factor'].sum())
+        cards_to_quiz = np.random.choice(self.df['id'], 20, p=self.df['probability']).tolist()
+        cards_to_quiz_df = self.df[self.df['id'].isin(cards_to_quiz)]
+        return self._df_to_cards_list(cards_to_quiz_df)
+
+    def _df_to_cards_list(self, df):
+        return [Card(**kwargs) for kwargs in df.to_dict(orient='records')]

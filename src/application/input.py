@@ -1,7 +1,7 @@
 from src.application.card import Card
 import toolz
 cards_unknown = []
-import csv
+
 
 def read_input_file(input_data):
     for line in input_data:
