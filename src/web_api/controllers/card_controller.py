@@ -1,3 +1,5 @@
+from datetime import date
+
 from flask import *
 from io import StringIO
 from sqlalchemy import exists, not_
@@ -31,7 +33,7 @@ def add_card():
     does_card_exist = db.session.query(exists().where(Card.foreign_word == body['foreign_word'])
                                        .where(Card.translated_word == body['translated_word'])).scalar()
 
-    condition, new_card = edit_add_card_conditions(body, does_card_exist, 'input') # new card can be None or card
+    condition, new_card = edit_add_card_conditions(body, does_card_exist, 'input')  # new card can be None or card
     if condition is True:
         db.session.add(new_card)
         db.session.commit()
@@ -75,10 +77,28 @@ def upload_cards_from_csv():
             return 'Cards added', 200
 
 
-@card_controller.route("/quiz/cards", methods=['GET'])
+@card_controller.route("/cards/quiz", methods=['GET'])
 def return_quiz_cards():
     all_cards = db.session.query(Card).all()
     algorithm = Algorithm(all_cards)
     algorithm.set_weights()
     cards_to_quiz = algorithm.select_quiz_cards()
     return jsonify(cards_to_quiz)
+
+
+@card_controller.route("/cards/quiz", methods=['PUT'])
+def update_card_statistics():
+    body = request.get_json()
+    cards_to_update = db.session.query(exists()
+                                       .where(Card.id == body['id'])).list()
+
+    date_now = date.today()
+
+    for card in cards_to_update:
+        card.date_last_review = date_now
+        card.answer_time = body['answer_time']
+        if body['last_answer_correct']:
+            card.number_correct_answers = card.number_correct_answers + 1
+        card.last_answer_correct = body['last_answer_correct']
+    db.session.commit()
+    return "Statistics updated", 200

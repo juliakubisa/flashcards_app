@@ -17,7 +17,7 @@ def edit_add_card_conditions(body, does_card_exist, action_type):
         return "The fields cannot be empty", None
     elif body['foreign_word'] and body['translated_word']:
         if action_type == 'input':
-            new_card = Card(body['foreign_word'], body['translated_word'])
+            new_card = Card(foreign_word=body['foreign_word'], translated_word=body['translated_word'])
             return True, new_card
         else:
             return True, None
