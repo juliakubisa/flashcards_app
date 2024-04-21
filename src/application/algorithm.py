@@ -18,9 +18,9 @@ class Algorithm:
 
     def set_weights(self):
         self.df['last_answer_correct'] = np.where(self.df['last_answer_correct'] is False, 1, -1)
-        self.df['days_since_last_review'] = self.df['date_last_review'] - date.today()
+        self.df['days_since_last_review'] = (self.df['date_last_review'] - date.today()).apply(lambda d: d.days)
         self.standarize_values()
-        weights = [-0.25, 0.25, 0.25, -0.25]
+        weights = [-0.25, 0.25, 0.25, -0.25, 0.25]
 
         self.df['new_easiness'] = (weights[1] * self.df['last_answer_correct']
                                    + weights[2] * self.df['number_correct_answers_s']
