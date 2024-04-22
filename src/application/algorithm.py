@@ -1,5 +1,4 @@
 from datetime import date
-
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
@@ -17,15 +16,15 @@ class Algorithm:
         self.standarized_variables_list = ['days_since_last_review_s', 'number_correct_answers_s', 'answer_time_s']
 
     def set_weights(self):
-        self.df['last_answer_correct'] = np.where(self.df['last_answer_correct'] is False, 1, -1)
+        self.df['last_answer_correct'] = np.where(self.df['last_answer_correct'] is True, 1, -1)
         self.df['days_since_last_review'] = (self.df['date_last_review'] - date.today()).apply(lambda d: d.days)
         self.standarize_values()
-        weights = [-0.25, 0.25, 0.25, -0.25, 0.25]
+        weights = [0.25, 0.25, -0.1, -0.25]
 
-        self.df['new_easiness'] = (weights[1] * self.df['last_answer_correct']
-                                   + weights[2] * self.df['number_correct_answers_s']
-                                   + weights[3] * self.df['answer_time_s']
-                                   + weights[4] * self.df['days_since_last_review'])
+        self.df['new_easiness'] = (weights[0] * self.df['last_answer_correct']
+                                   + weights[1] * self.df['number_correct_answers_s']
+                                   + weights[2] * self.df['answer_time_s']
+                                   + weights[3] * self.df['days_since_last_review'])
 
 
     def standarize_values(self):
@@ -34,8 +33,7 @@ class Algorithm:
         self.df[self.standarized_variables_list] = scaler.fit_transform(self.df[self.standarize_variables_list])
 
     def adjust_easiness(self):
-        """Apply algorithmic mean between old and new easiness factor to adjust it
-        where adjusted_easiness = 1/2(old_easiness+new_easiness)"""
+        """Apply algorithmic mean between old and new easiness factor to adjust it"""
         self.df.loc[self.df['new_easiness'] < 0, 'new_easiness'] = 0
         self.df['easiness_factor'] = round((self.df['easiness_factor'] + self.df['new_easiness']) / 2, 3)
 

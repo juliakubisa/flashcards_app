@@ -89,9 +89,7 @@ def return_quiz_cards():
 @card_controller.route("/cards/quiz", methods=['PUT'])
 def update_card_statistics():
     body = request.get_json()
-    
     ids_to_update = [card['id'] for card in body]
-
     cards_to_update = db.session.query(Card).filter(Card.id.in_(ids_to_update)).all()
 
     date_now = date.today()
@@ -101,7 +99,6 @@ def update_card_statistics():
 
         card.date_last_review = date_now
         card.answer_time = new_data['answer_time_ms']
-
         card.last_answer_correct = new_data['last_answer_correct']
 
         if new_data['last_answer_correct']:
