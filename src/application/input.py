@@ -1,9 +1,9 @@
 from src.application.card import Card
 import toolz
-cards_unknown = []
 
 
 def read_input_file(input_data):
+    cards_unknown = []
     for line in input_data:
         if " - " in line:
             try:
@@ -16,7 +16,5 @@ def read_input_file(input_data):
                 print('Upload the file in the right format')
 
     # delete duplicate words and translations
-    cards_unknown_unique = toolz.unique(cards_unknown, key = lambda x: x.foreign_word + x.translated_word)
+    cards_unknown_unique = toolz.unique(cards_unknown, key=lambda x: x.foreign_word + x.translated_word)
     return cards_unknown_unique
-
-    # if __name__ == '__main__':

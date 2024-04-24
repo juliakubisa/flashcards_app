@@ -5,10 +5,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 
 @dataclass
-class Language(db.Model):
-    # __tablename__ = "deck"
+class Deck(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[float] = mapped_column()
+    name: Mapped[float] = mapped_column() #TODO: add card
     language_id: Mapped[str] = mapped_column(ForeignKey("language.id"))
     # Many to one: one deck can have only one language but language can have multiple decks
     language: Mapped["Language"] = relationship()
