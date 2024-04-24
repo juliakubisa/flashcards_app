@@ -1,5 +1,5 @@
 from src.application.sql_database import db
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from dataclasses import dataclass
 from sqlalchemy import func, ForeignKey
 from datetime import date
@@ -12,7 +12,6 @@ class Card(db.Model):
     foreign_word: Mapped[str] = mapped_column()
     translated_word: Mapped[str] = mapped_column()
     date_added: Mapped[date] = mapped_column(insert_default=func.now())
-    # language: Mapped[str] = mapped_column(ForeignKey("language.id"))  #TODO: foreign_key vs relationship
 
     # Algorithm information
     easiness_factor: Mapped[float] = mapped_column(default=5)
