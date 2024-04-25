@@ -1,4 +1,5 @@
 from src.application.sql_database import db
+from src.application.deck import Deck
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from dataclasses import dataclass
 from sqlalchemy import func, ForeignKey
@@ -12,6 +13,8 @@ class Card(db.Model):
     foreign_word: Mapped[str] = mapped_column()
     translated_word: Mapped[str] = mapped_column()
     date_added: Mapped[date] = mapped_column(insert_default=func.now())
+    deck_id: Mapped[int] = mapped_column(ForeignKey("deck.name"), default='Test1')
+    deck: Mapped["Deck"] = relationship()
 
     # Algorithm information
     easiness_factor: Mapped[float] = mapped_column(default=5)
