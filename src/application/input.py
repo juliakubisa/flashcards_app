@@ -2,7 +2,7 @@ from src.application.card import Card
 import toolz
 
 
-def read_input_file(input_data):
+def read_input_file(input_data, deck_id):
     cards_unknown = []
     for line in input_data:
         if " - " in line:
@@ -10,7 +10,7 @@ def read_input_file(input_data):
                 word_pair = line.strip().split("-")
                 foreign_word = word_pair[0].replace('"', '').strip()
                 translated_word = word_pair[1].replace('"', '').strip()
-                card = Card(foreign_word=foreign_word, translated_word=translated_word)
+                card = Card(foreign_word=foreign_word, translated_word=translated_word, deck_id = deck_id)
                 cards_unknown.append(card)
             except:
                 print('Upload the file in the right format')

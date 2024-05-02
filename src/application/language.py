@@ -1,8 +1,6 @@
 from src.application.sql_database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-# from src.application.deck import Deck
-
 
 @dataclass
 class Language(db.Model):

@@ -2,7 +2,7 @@ from src.application.card import Card
 from src.application.utils import max_dict_value_len
 
 
-def edit_add_card_conditions(body, does_card_exist, action_type):
+def edit_add_card_conditions(does_card_exist, body, card):
     if 'foreign_word' not in body or 'translated_word' not in body:
         return "The fields cannot be empty", None
 
@@ -13,13 +13,23 @@ def edit_add_card_conditions(body, does_card_exist, action_type):
         return "This card already exists!", None
     elif not max_foreign_len or not max_transl_len:
         return "Input is too long", None
-    elif not(body['foreign_word'] and body['translated_word']):
+    elif not (body['foreign_word'] and body['translated_word']):
         return "The fields cannot be empty", None
     elif body['foreign_word'] and body['translated_word']:
-        if action_type == 'input':
-            new_card = Card(foreign_word=body['foreign_word'], translated_word=body['translated_word'])
-            return True, new_card
-        else:
-            return True, None
+        new_card = card
+        return True, new_card
     else:
         return "The fields cannot be empty", None
+
+
+def add_card_conditions(body, does_card_exist, deck_id):
+    edit_add_card_conditions(does_card_exist, body,
+                             Card(foreign_word=body['foreign_word'],
+                                  translated_word=body['translated_word'],
+                                  deck_id=deck_id))
+
+
+def edit_card_conditions(body, does_card_exist):
+    edit_add_card_conditions(does_card_exist, body,
+                             Card(foreign_word=body['foreign_word'],
+                                  translated_word=body['translated_word']))
