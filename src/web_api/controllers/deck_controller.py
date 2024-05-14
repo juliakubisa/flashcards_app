@@ -25,22 +25,31 @@ def return_decks():
 @deck_controller.route("/decks", methods=['POST'])
 def add_deck():
     body = request.get_json()
-    does_deck_exist = db.session.query(exists().where(Deck.name == body['name']))
-    new_deck = Deck(deck_name=body.name, language_id=body.language_id)
-    if not does_deck_exist and body['name']:
+
+    if not body['name']: return 'Name cannot be empty', 400
+    if not body['language_id']: return 'Language cannot be empty', 400
+
+    does_deck_exist = db.session.query(exists().where(Deck.name == body['name'])).scalar()
+    
+    new_deck = Deck(deck_name=body['name'], language_id=body['language_id'])
+
+    if not does_deck_exist:
         db.session.add(new_deck)
         db.session.commit()
         return "Deck sucesfully added", 200
     else:
-        return "The field cannot be empty", 400 if new_deck is None else 409
+        return "Deck already exists", 409
 
 
 @deck_controller.route("/decks/<deck_id>", methods=['DELETE'])
 def delete_deck(deck_id):
     deck_to_delete = Deck.query.get(deck_id)
+
+    if deck_to_delete is None: return 'Deck does not exist', 404
+
     db.session.delete(deck_to_delete)
     db.session.commit()
-    return "Deck deleted", 200
+    return 'Deck deleted', 200
 
 
 @deck_controller.route("/decks/<deck_id>/cards", methods=['GET'])
