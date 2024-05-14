@@ -26,8 +26,10 @@ def return_decks():
 def add_deck():
     body = request.get_json()
 
-    if not body['name']: return 'Name cannot be empty', 400
-    if not body['language_id']: return 'Language cannot be empty', 400
+    if not body['name']: 
+        return 'Name cannot be empty', 400
+    if not body['language_id']: 
+        return 'Language cannot be empty', 400
 
     does_deck_exist = db.session.query(exists().where(Deck.name == body['name'])).scalar()
     
@@ -45,7 +47,8 @@ def add_deck():
 def delete_deck(deck_id):
     deck_to_delete = Deck.query.get(deck_id)
 
-    if deck_to_delete is None: return 'Deck does not exist', 404
+    if deck_to_delete is None: 
+        return 'Deck does not exist', 404
 
     db.session.delete(deck_to_delete)
     db.session.commit()
