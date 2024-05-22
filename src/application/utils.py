@@ -1,4 +1,7 @@
 import csv
+from io import StringIO
+
+from src.application.card import Card
 from src.application.deck import Deck
 from src.application.language import Language
 
@@ -6,7 +9,7 @@ csv_lines = []
 
 
 def allowed_file_extension(filename):
-    allowed_extensions = {'csv'}
+    allowed_extensions = {'csv', 'txt'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 def clean_csv(csv_file):
@@ -50,7 +53,3 @@ def create_default_deck(db_session):
         decks.append(deck)
     db_session.add_all(decks)
     db_session.commit()
-
-
-
-

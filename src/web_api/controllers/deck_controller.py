@@ -86,9 +86,12 @@ def upload_cards_from_csv(deck_id):
         file = request.files['file']
         if file.filename == '':
             return 'No selected file', 400
+        if not allowed_file_extension(file.filename):
+            return 'Unsupported file extension', 400
         if file and allowed_file_extension(file.filename):
-            csv_data = StringIO(file.stream.read().decode("UTF8"), newline=None)
-            cards_unknown_unique = read_input_file(csv_data, deck_id)
+            raw_data = StringIO(file.stream.read().decode("UTF8"), newline=None)
+            delimiter = request.form['delimiter']
+            cards_unknown_unique = read_input_file(raw_data, deck_id, delimiter)
             db.session.add_all(cards_unknown_unique)
             db.session.commit()
             return 'Cards added', 200
