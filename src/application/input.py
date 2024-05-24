@@ -1,4 +1,4 @@
-from src.application.card import Card
+from src.model.card import Card
 import toolz
 
 
@@ -10,7 +10,7 @@ def read_input_file(input_data, deck_id, delimiter):
                 word_pair = line.strip().split(delimiter)
                 foreign_word = word_pair[0].replace('"', '').strip()
                 translated_word = word_pair[1].replace('"', '').strip()
-                card = Card(foreign_word=foreign_word, translated_word=translated_word, deck_id = deck_id)
+                card = Card(foreign_word=foreign_word, translated_word=translated_word, deck_id=deck_id)
                 cards_unknown.append(card)
             except:
                 print('Upload the file in the right format')

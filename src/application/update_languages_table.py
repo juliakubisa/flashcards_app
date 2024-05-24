@@ -1,4 +1,4 @@
-from src.application.language import Language
+from src.model.language import Language
 import os
 
 
@@ -21,4 +21,3 @@ def insert_languages(db_session):
         languages = read_languages()
         db_session.add_all(languages)
         db_session.commit()
-

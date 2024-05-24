@@ -1,7 +1,7 @@
 from typing import List
 from src.application.sql_database import db
-from src.application.language import Language
-from src.application.card import Card
+from src.model.language import Language
+from src.model.card import Card
 from dataclasses import dataclass
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey

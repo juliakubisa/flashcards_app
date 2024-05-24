@@ -1,4 +1,4 @@
-from src.application.card import Card
+from src.model.card import Card
 from src.application.utils import max_dict_value_len
 
 

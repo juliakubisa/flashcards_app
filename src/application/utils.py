@@ -1,9 +1,7 @@
 import csv
-from io import StringIO
 
-from src.application.card import Card
-from src.application.deck import Deck
-from src.application.language import Language
+from src.model.deck import Deck
+from src.model.language import Language
 
 csv_lines = []
 
@@ -12,14 +10,13 @@ def allowed_file_extension(filename):
     allowed_extensions = {'csv', 'txt'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-def clean_csv(csv_file):
 
+def clean_csv(csv_file):
     with open(csv_file, 'r') as f:
         lines = f.readlines()
         for line in lines:
             if " - " in line:
-                line_to_write = []
-                line_to_write.append(line.strip().replace("'", ''))
+                line_to_write = [line.strip().replace("'", '')]
                 csv_lines.append(line_to_write)
             else:
                 pass
@@ -47,7 +44,7 @@ def create_default_deck(db_session):
     ]
 
     for i, deck_data in enumerate(decks_data):
-        deck = Deck(deck_name = deck_data['name'])
+        deck = Deck(deck_name=deck_data['name'])
         english = db_session.query(Language).filter(Language.id == 'en').first()
         deck.language_id = english.id
         decks.append(deck)

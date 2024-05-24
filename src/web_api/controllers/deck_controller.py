@@ -4,13 +4,13 @@ from io import StringIO
 from sqlalchemy import exists
 from sqlalchemy.orm import joinedload
 from src.application.algorithm import Algorithm
-from src.application.card import Card
-from src.application.deck import Deck
+from src.model.card import Card
+from src.model.deck import Deck
 from src.application.sql_database import db
 from src.application.utils import allowed_file_extension
 from src.application.input import read_input_file
 from src.web_api.controllers.utils import add_card_conditions
-from src.web_api.model.deck_dto import DeckDTO
+from src.model.deck_dto import DeckDTO
 
 deck_controller = Blueprint('deck_controller', __name__)
 
@@ -103,7 +103,7 @@ def return_quiz_cards(deck_id):
     algorithm = Algorithm(all_cards)
     algorithm.set_weights()
     cards_to_quiz = algorithm.select_quiz_cards()
-    return jsonify(cards_to_quiz)
+    return jsonify([card.__dict__ for card in cards_to_quiz])
 
 
 @deck_controller.route("/decks/<deck_id>/quiz/results", methods=['PUT'])
