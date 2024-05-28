@@ -100,10 +100,14 @@ def upload_cards_from_csv(deck_id):
 @deck_controller.route("/decks/<deck_id>/quiz/cards", methods=['GET'])
 def return_quiz_cards(deck_id):
     all_cards = db.session.query(Deck).filter(Deck.id == deck_id).options(joinedload(Deck.cards)).first().cards
-    algorithm = Algorithm(all_cards)
-    algorithm.set_weights()
-    cards_to_quiz = algorithm.select_quiz_cards()
-    return jsonify([card.__dict__ for card in cards_to_quiz])
+    num_cards = int(request.args.get('number_of_cards'))
+    if len(all_cards) > num_cards:
+        algorithm = Algorithm(all_cards, num_cards)
+        algorithm.set_weights()
+        cards_to_quiz = algorithm.select_quiz_cards()
+        return jsonify([card.__dict__ for card in cards_to_quiz])
+    else:
+        return "Too few cards to quiz", 400
 
 
 @deck_controller.route("/decks/<deck_id>/quiz/results", methods=['PUT'])
