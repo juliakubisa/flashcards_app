@@ -61,14 +61,14 @@ def return_cards_in_deck(deck_id):
     return jsonify(deck.cards)
 
 
-@deck_controller.route("/decks/<deck_id>/card", methods=['POST'])
+@deck_controller.route("/decks/<deck_id>/cards", methods=['POST'])
 def add_card(deck_id):
     body = request.get_json()
     does_card_exist = db.session.query(exists().where(Card.foreign_word == body['foreign_word'])
                                        .where(Card.translated_word == body['translated_word'])
-                                       .where(Card.deck_id == body['deck_id'])).scalar()
+                                       .where(Card.deck_id == deck_id)).scalar()
 
-    condition_output, new_card = add_card_conditions(body, does_card_exist, deck_id)
+    condition_output, new_card = add_card_conditions(does_card_exist, body, deck_id)
     if condition_output is True:
         db.session.add(new_card)
         db.session.commit()

@@ -16,20 +16,19 @@ def edit_add_card_conditions(does_card_exist, body, card):
     elif not (body['foreign_word'] and body['translated_word']):
         return "The fields cannot be empty", None
     elif body['foreign_word'] and body['translated_word']:
-        new_card = card
-        return True, new_card
+        return True, card
     else:
         return "The fields cannot be empty", None
 
 
-def add_card_conditions(body, does_card_exist, deck_id):
-    edit_add_card_conditions(does_card_exist, body,
-                             Card(foreign_word=body['foreign_word'],
-                                  translated_word=body['translated_word'],
-                                  deck_id=deck_id))
+def add_card_conditions(does_card_exist, body, deck_id):
+    return edit_add_card_conditions(does_card_exist, body,
+                                    Card(foreign_word=body['foreign_word'],
+                                         translated_word=body['translated_word'],
+                                         deck_id=deck_id))
 
 
 def edit_card_conditions(body, does_card_exist):
-    edit_add_card_conditions(does_card_exist, body,
-                             Card(foreign_word=body['foreign_word'],
-                                  translated_word=body['translated_word']))
+    return edit_add_card_conditions(does_card_exist, body,
+                                    Card(foreign_word=body['foreign_word'],
+                                         translated_word=body['translated_word']))
