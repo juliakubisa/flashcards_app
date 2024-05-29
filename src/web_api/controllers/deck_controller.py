@@ -79,7 +79,7 @@ def add_card(deck_id):
 
 
 @deck_controller.route("/decks/<deck_id>/file", methods=['POST'])
-def upload_cards_from_csv(deck_id):
+def upload_cards_from_file(deck_id):
     if request.method == 'POST':
         if 'file' not in request.files:
             return 'No selected file', 400

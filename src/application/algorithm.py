@@ -53,11 +53,11 @@ class Algorithm:
         new_entries_df, old_entries_df = self.select_new_entries()
 
         if len(new_entries_df) >= self.num_cards:
-            cards_to_quiz_ids = np.random.choice(new_entries_df['id'], self.num_cards).tolist()
+            cards_to_quiz_ids = np.random.choice(new_entries_df['id'], self.num_cards, replace=False).tolist()
             cards_to_quiz_df = new_entries_df[new_entries_df['id'].isin(cards_to_quiz_ids)]
 
         else:
-            # If there are less entries that num_cards, first take the new_entries
+            # If there are fewer entries that num_cards, first take the new_entries
             cards_to_quiz_ids = new_entries_df['id'].tolist()
             cards_to_quiz_df = new_entries_df[new_entries_df['id'].isin(cards_to_quiz_ids)]
 
@@ -67,42 +67,40 @@ class Algorithm:
             self.adjust_easiness(old_entries_df)
             old_entries_df['probability'] = (old_entries_df['easiness_factor'] / old_entries_df['easiness_factor'].sum())
 
-            remaining_ids = np.random.choice(old_entries_df['id'], self.num_cards-remaining_cards,
-                                                 p=old_entries_df['probability']).tolist()
+            remaining_ids = np.random.choice(old_entries_df['id'], remaining_cards,
+                                                 p=old_entries_df['probability'], replace=False).tolist()
+
             remaining_cards_df = old_entries_df[old_entries_df['id'].isin(remaining_ids)]
 
             # Merge both dataframes
-            cards_to_quiz_df.append(remaining_cards_df)
+            cards_to_quiz_df = pd.concat([cards_to_quiz_df,remaining_cards_df])
 
         similar_answers_df = self.select_similar_cards(cards_to_quiz_df['foreign_word'].to_list())
         cards_to_quiz_with_answers_df = (pd.merge(cards_to_quiz_df, similar_answers_df, on='foreign_word'))
 
-        self.df['last_answer_correct'] = np.where(self.df['last_answer_correct'] == 1, True, False) #???
+        self.df['last_answer_correct'] = np.where(self.df['last_answer_correct'] == 1, True, False)  # ???
         return self._df_to_cards_list(cards_to_quiz_with_answers_df)
 
     def select_similar_cards(self, words):
         """Selects 3 other options for quiz ABCD mode"""
         similar_answers = []
 
-        # Exclude original words selected for quiz
-        possible_answers = self.df[~self.df['foreign_word'].isin(words)]['foreign_word']
-        possible_answers = possible_answers.to_list()
         for word in words:
-            similar_words = get_close_matches(word, possible_answers, 3)
+            similar_words = get_close_matches(word, self.df['foreign_word'].to_list(), 3)
 
             # If difflib cannot find all 3 similar answers manually append random
             while len(similar_words) < 3:
-                similar_words.extend(random.sample(possible_answers, 3-len(similar_words)))
+                similar_words.extend(random.sample(self.df['foreign_word'].to_list(), 3-len(similar_words)))
             similar_answers.append([word, similar_words])
 
         similar_answers_df = pd.DataFrame(similar_answers, columns=['foreign_word', 'similar_words'])
         return similar_answers_df
 
     def select_new_entries(self):
-        "Distinguish between new cards (never seen before) and old cards"
+        """Distinguish between new cards (never seen before) and old cards"""
         new_entries_df = self.df[self.df['date_last_review'].isnull()]
-        olf_entries_df = self.df[~self.df['date_last_review'].isnull()]
-        return new_entries_df, olf_entries_df
+        old_entries_df = self.df[~self.df['date_last_review'].isnull()]
+        return new_entries_df, old_entries_df
 
     def _df_to_cards_list(self, df):
         return [
