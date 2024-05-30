@@ -84,13 +84,16 @@ class Algorithm:
     def select_similar_cards(self, words):
         """Selects 3 other options for quiz ABCD mode"""
         similar_answers = []
+        all_foreign_words = self.df['foreign_word']
 
         for word in words:
-            similar_words = get_close_matches(word, self.df['foreign_word'].to_list(), 3)
+            other_words = all_foreign_words[all_foreign_words != word]
+
+            similar_words = get_close_matches(word, other_words.to_list(), 3)
 
             # If difflib cannot find all 3 similar answers manually append random
             while len(similar_words) < 3:
-                similar_words.extend(random.sample(self.df['foreign_word'].to_list(), 3-len(similar_words)))
+                similar_words.extend(random.sample(other_words.to_list(), 3-len(similar_words)))
             similar_answers.append([word, similar_words])
 
         similar_answers_df = pd.DataFrame(similar_answers, columns=['foreign_word', 'similar_words'])
