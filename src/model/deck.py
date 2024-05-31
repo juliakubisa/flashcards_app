@@ -14,7 +14,8 @@ class Deck(db.Model):
     language_id: Mapped[int] = mapped_column(ForeignKey("language.id"))
     # Many to one: one deck can have only one language but language can have multiple decks
     language: Mapped["Language"] = relationship()
-    cards: Mapped[List["Card"]] = relationship()  # one to many when Deck is the parent class
+    # one to many when Deck is the parent class
+    cards: Mapped[List["Card"]] = relationship(cascade="all, delete-orphan")
 
     def __init__(self, deck_name, language_id):
         self.name = deck_name
