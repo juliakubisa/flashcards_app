@@ -16,11 +16,16 @@ deck_controller = Blueprint('deck_controller', __name__)
 
 
 @deck_controller.route("/decks", methods=['GET'])
-def return_decks():
+def return_all_decks():
     all_decks = db.session.query(Deck).all()
     decks_dtos = [DeckDTO(deck) for deck in all_decks]
     return jsonify([dto.__dict__ for dto in decks_dtos])
 
+
+@deck_controller.route("/decks/<deck_id>", methods=['GET'])
+def return_deck(deck_id):
+    deck = db.session.query(Deck).filter(Deck.id == deck_id).options(joinedload(Deck.cards)).first()
+    return jsonify(DeckDTO(deck).__dict__)
 
 @deck_controller.route("/decks", methods=['POST'])
 def add_deck():
