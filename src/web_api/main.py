@@ -21,7 +21,6 @@ with app.app_context():
     db.create_all()
     db.session.commit()
     insert_languages(db.session)
-    # create_default_deck(db.session)
 
 app.register_blueprint(card_controller.card_controller)
 app.register_blueprint(deck_controller.deck_controller)
