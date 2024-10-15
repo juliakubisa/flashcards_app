@@ -50,3 +50,7 @@ def create_default_deck(db_session):
         decks.append(deck)
     db_session.add_all(decks)
     db_session.commit()
+
+
+def create_quiz_datasets(db_session):
+    print('yay')

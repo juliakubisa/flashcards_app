@@ -106,7 +106,7 @@ def upload_cards_from_file(deck_id):
 def return_quiz_cards(deck_id):
     all_cards = db.session.query(Deck).filter(Deck.id == deck_id).options(joinedload(Deck.cards)).first().cards
     num_cards = int(request.args.get('number_of_cards'))
-    if len(all_cards) > num_cards:
+    if len(all_cards) >= num_cards and len(all_cards) >= 10:
         algorithm = Algorithm(all_cards, num_cards)
         algorithm.set_weights()
         cards_to_quiz = algorithm.select_quiz_cards()
@@ -120,10 +120,12 @@ def update_card_statistics(deck_id):
     body = request.get_json()
     date_now = date.today()
 
+    # Update only the cards that were quizzed
     ids_to_update = [card['id'] for card in body]
     cards_to_update = db.session.query(Card).filter(Card.id.in_(ids_to_update)).all()
 
     for card in cards_to_update:
+        # Replace the old data with the new data from quiz for each card
         new_data = next((data for data in body if data["id"] == card.id), None)
 
         card.date_last_review = date_now
