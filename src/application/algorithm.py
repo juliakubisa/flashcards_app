@@ -5,6 +5,8 @@ from sklearn.preprocessing import StandardScaler
 from src.model.cards_to_quiz_dto import QuizCardDTO
 from difflib import get_close_matches
 import random
+import warnings
+warnings.filterwarnings("ignore")
 
 
 class Algorithm:
@@ -54,32 +56,34 @@ class Algorithm:
         if len(old_entries_df) == 0:
             cards_to_quiz_ids = np.random.choice(new_entries_df['id'], self.num_cards, replace=False).tolist()
             cards_to_quiz_df = new_entries_df[new_entries_df['id'].isin(cards_to_quiz_ids)]
-
         else:
-            # Take 0.8 of old entries and 0.2 of new entries in each quiz
             old_entries_df = self.adjust_easiness(old_entries_df)
             old_entries_df['probability'] = (old_entries_df['easiness_factor'] / old_entries_df['easiness_factor'].sum())
 
-            if len(old_entries_df) >= self.num_cards/0.8:
-                old_entries_to_quiz_ids = np.random.choice(old_entries_df['id'], round(0.8*self.num_cards),
-                                                     p=old_entries_df['probability'], replace=False).tolist()
+            if len(old_entries_df) < 0.8 * self.num_cards:
+                old_entries_to_quiz_ids = np.random.choice(old_entries_df['id'], len(old_entries_df), replace=False).tolist()
+                new_entries_to_quiz_ids = np.random.choice(new_entries_df['id'], self.num_cards - len(old_entries_to_quiz_ids),
+                                                           replace=False).tolist()
+
+            elif len(old_entries_df) > 0.8 * self.num_cards and len(new_entries_df) > 0.2:
+                old_entries_to_quiz_ids = np.random.choice(old_entries_df['id'], round(0.8 * self.num_cards),
+                                                           p=old_entries_df['probability'], replace=False).tolist()
+                new_entries_to_quiz_ids = np.random.choice(new_entries_df['id'], self.num_cards -
+                                                           len(old_entries_to_quiz_ids), replace=False).tolist()
+
             else:
-                old_entries_to_quiz_ids = np.random.choice(old_entries_df['id'], len(old_entries_df),
+                new_entries_to_quiz_ids = np.random.choice(new_entries_df['id'], len(new_entries_df), replace=False).tolist()
+                old_entries_to_quiz_ids = np.random.choice(old_entries_df['id'], self.num_cards - len(new_entries_to_quiz_ids),
                                                            p=old_entries_df['probability'], replace=False).tolist()
 
             old_entries_to_quiz_df = old_entries_df[old_entries_df['id'].isin(old_entries_to_quiz_ids)]
-
-            remaining_ids = self.num_cards - len(old_entries_to_quiz_df)
-
-            new_entries_to_quiz_ids = np.random.choice(new_entries_df['id'], remaining_ids, replace=False).tolist()
             new_entries_to_quiz_df = new_entries_df[new_entries_df['id'].isin(new_entries_to_quiz_ids)]
-
             cards_to_quiz_df = pd.concat([new_entries_to_quiz_df, old_entries_to_quiz_df])
 
         similar_answers_df = self.select_similar_cards(cards_to_quiz_df['foreign_word'].to_list())
         cards_to_quiz_with_answers_df = (pd.merge(cards_to_quiz_df, similar_answers_df, on='foreign_word'))
 
-        self.df['last_answer_correct'] = np.where(self.df['last_answer_correct'] == 1, True, False)
+        self.df['last_answer_correct'] = self.df['last_answer_correct'].astype(bool)
         return self._df_to_cards_list(cards_to_quiz_with_answers_df)
 
     def select_similar_cards(self, words):
@@ -89,7 +93,6 @@ class Algorithm:
 
         for word in words:
             other_words = all_foreign_words[all_foreign_words != word]
-
             similar_words = get_close_matches(word, other_words.to_list(), 3)
 
             # If difflib cannot find all 3 similar answers manually append random
