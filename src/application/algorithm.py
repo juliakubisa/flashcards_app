@@ -25,8 +25,7 @@ class Algorithm:
         old_entries = self.df['date_last_review'].notna()
 
         if old_entries.any():
-            # Modify only the quizzed cards
-            self.df.loc[old_entries, 'last_answer_correct'] = np.where(self.df.loc[old_entries, 'last_answer_correct'] is False, 1, -1)
+            self.df.loc[old_entries, 'last_answer_correct'] = np.where(self.df.loc[old_entries, 'last_answer_correct'] == False, 1, -1)
             self.df.loc[old_entries, 'days_since_last_review'] = abs((self.df.loc[old_entries, 'date_last_review']
                                                                       - date.today()).apply(lambda d: d.days))
             self.standarize_values(old_entries)
@@ -58,7 +57,7 @@ class Algorithm:
             cards_to_quiz_df = new_entries_df[new_entries_df['id'].isin(cards_to_quiz_ids)]
         else:
             old_entries_df = self.adjust_easiness(old_entries_df)
-            old_entries_df['probability'] = (old_entries_df['easiness_factor'] / old_entries_df['easiness_factor'].sum())
+            old_entries_df['probability'] = (1-old_entries_df['easiness_factor'])/(1-old_entries_df['easiness_factor']).sum()
 
             if len(old_entries_df) < 0.8 * self.num_cards:
                 old_entries_to_quiz_ids = np.random.choice(old_entries_df['id'], len(old_entries_df), replace=False).tolist()
@@ -79,11 +78,13 @@ class Algorithm:
             old_entries_to_quiz_df = old_entries_df[old_entries_df['id'].isin(old_entries_to_quiz_ids)]
             new_entries_to_quiz_df = new_entries_df[new_entries_df['id'].isin(new_entries_to_quiz_ids)]
             cards_to_quiz_df = pd.concat([new_entries_to_quiz_df, old_entries_to_quiz_df])
-
+        print('This is old entries df before merging', old_entries_df[['foreign_word', 'easiness_factor']])
         similar_answers_df = self.select_similar_cards(cards_to_quiz_df['foreign_word'].to_list())
         cards_to_quiz_with_answers_df = (pd.merge(cards_to_quiz_df, similar_answers_df, on='foreign_word'))
-
-        self.df['last_answer_correct'] = self.df['last_answer_correct'].astype(bool)
+        print(similar_answers_df)
+        print('After mergning', cards_to_quiz_with_answers_df[['foreign_word', 'easiness_factor', 'similar_words', 'probability']])
+        self.df['last_answer_correct'] = np.where(self.df['last_answer_correct'] == 1, True, False)
+        print(self.df[['foreign_word', 'last_answer_correct', 'easiness_factor']])
         return self._df_to_cards_list(cards_to_quiz_with_answers_df)
 
     def select_similar_cards(self, words):
