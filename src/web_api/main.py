@@ -14,7 +14,6 @@ CORS(app, origins='*')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_CONNECTION_STRING']
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000  # restrict max size to 16MB
 app.config['JWT_SECRET'] = os.environ['JWT_SECRET']
-app.config['GOOGLE_CLIENT_ID'] = os.environ['GOOGLE_CLIENT_ID']
 
 db.init_app(app)
 

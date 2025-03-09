@@ -5,10 +5,6 @@ from src.application.sql_database import db
 from src.model.account import Account 
 import jwt
 import bcrypt
-from google.oauth2 import id_token as google_id_token
-from google.auth.transport import requests as google_requests
-import secrets
-import string
 
 
 account_controller = Blueprint('account_controller', __name__)
@@ -58,32 +54,6 @@ def login():
 
     return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token}), 200
 
-@account_controller.route('/login_with_google', methods=['POST'])
-def login_with_google():
-    try:
-        google_credential = request.json.get('credential')
-        payload = google_id_token.verify_oauth2_token(google_credential, google_requests.Request(), current_app.config['GOOGLE_CLIENT_ID'])
-
-        user_google_id = payload['sub']
-        user_email = payload['email']
-
-        account = db.session.query(Account).filter(Account.google_id == user_google_id).scalar()
-
-        if not account:
-            account = Account(payload['name'], user_email, generate_random_password(), user_google_id)
-            account.google_id = user_google_id
-            db.session.add(account)
-            db.session.commit()
-        
-        access_token = generate_access_token(user_email)
-        refresh_token = generate_refresh_token(user_email)
-
-        account.refresh_token = refresh_token
-        db.session.commit()
-
-        return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token}), 200
-    except ValueError:
-        return jsonify({"message": "Invalid token"}), 401
 
 @account_controller.route('/refresh_token', methods=['POST'])
 def refresh_token():
@@ -137,8 +107,3 @@ def generate_refresh_token(email):
     token = jwt.encode(token_payload, current_app.config['JWT_SECRET'], algorithm='HS256')
 
     return token
-
-def generate_random_password():
-    alphabet = string.ascii_letters + string.digits
-    password = ''.join(secrets.choice(alphabet) for i in range(20))
-    return password
