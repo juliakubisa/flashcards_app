@@ -1,6 +1,5 @@
 import datetime
-import os
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, make_response, request, current_app
 from src.application.sql_database import db
 from src.model.account import Account 
 import jwt
@@ -52,7 +51,17 @@ def login():
     account.refresh_token = refresh_token
     db.session.commit()
 
-    return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token}), 200
+    response = make_response(jsonify({"message": "Successful login", "access_token": access_token}))
+
+    response.set_cookie(
+        'refresh_token', 
+        value=refresh_token, 
+        httponly=True,
+        secure=True,
+        samesite='Strict'
+    )
+
+    return response, 200
 
 
 @account_controller.route('/refresh_token', methods=['POST'])
@@ -78,12 +87,42 @@ def refresh_token():
         account.refresh_token = new_refresh_token
         db.session.commit()
 
-        return jsonify(access_token=new_access_token, refresh_token=new_refresh_token), 200
+        response = make_response(jsonify({"access_token": new_access_token}))
+
+        response.set_cookie(
+            'refresh_token', 
+            value=new_refresh_token, 
+            httponly=True,
+            secure=True,
+            samesite='Strict'
+        )
+
+        return response, 200
 
     except jwt.ExpiredSignatureError:
         return jsonify({"message": "Refresh token expired"}), 403
     except jwt.InvalidTokenError:
         return jsonify({"message": "Invalid refresh token"}), 403
+    
+# @account_controller.route('/logout', methods=['POST'])
+# def logout():
+#     account = db.session.query(Account).filter(Account.email == email).scalar()
+
+#     account.refresh_token = None
+#     db.session.commit()
+
+#     response = make_response(jsonify({"message": "Successful logout"}))
+
+#     response.set_cookie(
+#         'refresh_token', 
+#         value='', 
+#         httponly=True,
+#         secure=True,
+#         samesite='Strict',
+#         max_age=1
+#     )
+
+#     return response, 201
     
 
 def generate_access_token(email):
