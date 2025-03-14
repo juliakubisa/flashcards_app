@@ -52,7 +52,7 @@ def login():
     account.refresh_token = refresh_token
     db.session.commit()
 
-    return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token}), 200
+    return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token, "email": email, "name": account.name}), 200
 
 
 @account_controller.route('/refresh_token', methods=['POST'])
