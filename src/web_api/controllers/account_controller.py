@@ -63,8 +63,7 @@ def login_with_google():
     try:
         google_credential = request.json.get('idToken')
         payload = google_id_token.verify_oauth2_token(google_credential, google_requests.Request(), current_app.config['GOOGLE_CLIENT_ID'])
-    except ValueError as error:
-        print(error)
+    except ValueError:
         return jsonify({"message": "Invalid token"}), 401
     
     user_google_id = payload['sub']
