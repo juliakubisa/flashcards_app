@@ -5,6 +5,7 @@ from src.application.utils import create_default_deck
 from src.web_api.controllers import account_controller, card_controller, deck_controller, language_controller
 from src.application.sql_database import db
 from src.application.update_languages_table import insert_languages
+from flask_migrate import Migrate
 
 
 app = Flask(__name__)
@@ -21,6 +22,7 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     db.session.commit()
+    migrate = Migrate(app, db)
     insert_languages(db.session)
 
 app.register_blueprint(card_controller.card_controller)

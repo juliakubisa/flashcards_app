@@ -61,29 +61,29 @@ def login():
 @account_controller.route('/login_with_google', methods=['POST'])
 def login_with_google():
     try:
-        google_credential = request.json.get('credential')
+        google_credential = request.json.get('idToken')
         payload = google_id_token.verify_oauth2_token(google_credential, google_requests.Request(), current_app.config['GOOGLE_CLIENT_ID'])
-
-        user_google_id = payload['sub']
-        user_email = payload['email']
-
-        account = db.session.query(Account).filter(Account.google_id == user_google_id).scalar()
-
-        if not account:
-            account = Account(payload['name'], user_email, generate_random_password(), user_google_id)
-            account.google_id = user_google_id
-            db.session.add(account)
-            db.session.commit()
-        
-        access_token = generate_access_token(user_email)
-        refresh_token = generate_refresh_token(user_email)
-
-        account.refresh_token = refresh_token
-        db.session.commit()
-
-        return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token}), 200
     except ValueError:
         return jsonify({"message": "Invalid token"}), 401
+    
+    user_google_id = payload['sub']
+    user_email = payload['email']
+
+    account = db.session.query(Account).filter(Account.google_id == user_google_id).scalar()
+
+    if not account:
+        account = Account(payload['name'], user_email, generate_random_password())
+        account.google_id = user_google_id
+        db.session.add(account)
+        db.session.commit()
+    
+    access_token = generate_access_token(user_email)
+    refresh_token = generate_refresh_token(user_email)
+
+    account.refresh_token = refresh_token
+    db.session.commit()
+
+    return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token, "email": user_email, "name": account.name}), 200
 
 @account_controller.route('/refresh_token', methods=['POST'])
 def refresh_token():
