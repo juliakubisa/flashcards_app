@@ -1,4 +1,4 @@
-from src.model.model_base import ModelBase
+from src.domain.model_base import ModelBase
 from dataclasses import dataclass
 from sqlalchemy.orm import Mapped, mapped_column
 

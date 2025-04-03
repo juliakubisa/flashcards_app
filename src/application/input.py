@@ -1,4 +1,4 @@
-from src.model.card import Card
+from src.domain.card import Card
 import toolz
 
 

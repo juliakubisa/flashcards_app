@@ -7,10 +7,16 @@
 
 from fastapi import FastAPI
 from .controllers import deck_controller
-
+from src.domain.model_base import ModelBase
+from src.infrastructure.database import db_engine
 
 app = FastAPI()
 app.include_router(deck_controller.router)
+
+# Generate database schema based on model classes
+ModelBase.metadata.create_all(db_engine)
+
+
 
 # CORS(app, origins='*')
 

@@ -5,21 +5,21 @@ from fastapi import APIRouter
 # from sqlalchemy.orm import joinedload
 # from src.application.algorithm import Algorithm
 # from src.model.card import Card
-from src.model.deck import Deck
-from src.infrastructure.database import db
 # from src.application.utils import allowed_file_extension
 # from src.application.input import read_input_file
 # from src.web_api.controllers.utils import add_card_conditions
-from src.model.deck_dto import DeckDTO
+from src.application.queries.get_all_decks import GetAllDecks
+from src.application.model.output.deck_response import DeckResponse
+from src.web_api.dependencies import DeckRepositoryDependency
+
 
 router = APIRouter()
 
-
 @router.get("/decks")
-def return_all_decks():
-    all_decks = db.session.query(Deck).all()
-    decks_dtos = [DeckDTO(deck) for deck in all_decks]
-    return [dto.__dict__ for dto in decks_dtos]
+async def return_all_decks(deck_repository: DeckRepositoryDependency) -> list[DeckResponse]:
+        query = GetAllDecks(deck_repository)
+        decks = query.handle()
+        return decks
 
 
 # @router.route("/decks/<deck_id>", methods=['GET'])

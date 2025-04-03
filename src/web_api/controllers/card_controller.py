@@ -1,6 +1,6 @@
 from flask import *
 from sqlalchemy import exists, not_
-from src.model.card import Card
+from src.domain.card import Card
 from src.application.sql_database import db
 from src.web_api.controllers.utils import add_card_conditions, edit_card_conditions
 

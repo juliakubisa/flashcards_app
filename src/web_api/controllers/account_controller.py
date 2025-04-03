@@ -2,7 +2,7 @@ import datetime
 import os
 from flask import Blueprint, jsonify, request, current_app
 from src.application.sql_database import db
-from src.model.account import Account 
+from src.domain.account import Account 
 import jwt
 import bcrypt
 from google.oauth2 import id_token as google_id_token

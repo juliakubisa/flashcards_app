@@ -1,5 +1,5 @@
 from flask import *
-from src.model.language import Language
+from src.domain.language import Language
 from src.application.sql_database import db
 
 language_controller = Blueprint('language_controller', __name__)
