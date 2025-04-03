@@ -6,7 +6,7 @@ from fastapi import APIRouter
 # from src.application.algorithm import Algorithm
 # from src.model.card import Card
 from src.model.deck import Deck
-from src.application.sql_database import db
+from src.infrastructure.database import db
 # from src.application.utils import allowed_file_extension
 # from src.application.input import read_input_file
 # from src.web_api.controllers.utils import add_card_conditions

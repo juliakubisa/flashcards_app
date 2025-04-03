@@ -1,4 +1,4 @@
-from src.application.sql_database import db
+from src.model.model_base import ModelBase
 from sqlalchemy.orm import Mapped, mapped_column
 from dataclasses import dataclass
 from sqlalchemy import func, ForeignKey
@@ -6,7 +6,9 @@ from datetime import date
 
 
 @dataclass
-class Card(db.Model):
+class Card(ModelBase):
+    __tablename__ = "card"
+
     # Basic Information
     id: Mapped[int] = mapped_column(primary_key= True)
     foreign_word: Mapped[str] = mapped_column()

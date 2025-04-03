@@ -1,9 +1,11 @@
-from src.application.sql_database import db
+from src.model.model_base import ModelBase
 from dataclasses import dataclass
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 @dataclass
-class Language(db.Model):
+class Language(ModelBase):
+    __tablename__ = "language"
+
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column()
 

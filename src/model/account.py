@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from src.application.sql_database import db
+from src.model.model_base import ModelBase
 
 
-class Account(db.Model):
+class Account(ModelBase):
+    __tablename__ = "account"
+
     id: Mapped[int] = mapped_column(primary_key=True)
     google_id: Mapped[str] = mapped_column(nullable=True)
     name: Mapped[str] = mapped_column()

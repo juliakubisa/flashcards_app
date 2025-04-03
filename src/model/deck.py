@@ -1,5 +1,5 @@
 from typing import List
-from src.application.sql_database import db
+from src.model.model_base import ModelBase
 from src.model.language import Language
 from src.model.card import Card
 from dataclasses import dataclass
@@ -8,7 +8,9 @@ from sqlalchemy import ForeignKey
 
 
 @dataclass
-class Deck(db.Model):
+class Deck(ModelBase):
+    __tablename__ = "deck"
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column()
     language_id: Mapped[int] = mapped_column(ForeignKey("language.id"))
