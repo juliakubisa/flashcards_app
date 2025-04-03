@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-
 from src.domain.deck import Deck
 
 
