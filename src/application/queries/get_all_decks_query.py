@@ -1,7 +1,7 @@
 from src.application.model.output.deck_response import DeckResponse
 from src.repositories.deck_repository import DeckRepository
 
-class GetAllDecks:
+class GetAllDecksQuery:
     def __init__(self, repository: DeckRepository):
         self.repository = repository
 

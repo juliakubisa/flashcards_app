@@ -8,7 +8,7 @@ from fastapi import APIRouter
 # from src.application.utils import allowed_file_extension
 # from src.application.input import read_input_file
 # from src.web_api.controllers.utils import add_card_conditions
-from src.application.queries.get_all_decks import GetAllDecks
+from src.application.queries.get_all_decks_query import GetAllDecksQuery
 from src.application.model.output.deck_response import DeckResponse
 from src.web_api.dependencies import DeckRepositoryDependency
 
@@ -17,7 +17,7 @@ router = APIRouter()
 
 @router.get("/decks")
 async def return_all_decks(deck_repository: DeckRepositoryDependency) -> list[DeckResponse]:
-        query = GetAllDecks(deck_repository)
+        query = GetAllDecksQuery(deck_repository)
         decks = query.handle()
         return decks
 
