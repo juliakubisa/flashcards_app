@@ -5,7 +5,9 @@
 # from src.application.update_languages_table import insert_languages
 # from flask_migrate import Migrate, upgrade
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+
+from src.domain.exceptions.duplicate_exception import DuplicateException
 from .controllers import deck_controller
 from src.domain.model_base import ModelBase
 from src.infrastructure.database import db_engine
@@ -16,7 +18,9 @@ app.include_router(deck_controller.router)
 # Generate database schema based on model classes
 ModelBase.metadata.create_all(db_engine)
 
-
+@app.exception_handler(DuplicateException)
+async def duplicate_exception_handler(request, exc: DuplicateException):
+    raise HTTPException(status_code=409, detail=str(exc))
 
 # CORS(app, origins='*')
 

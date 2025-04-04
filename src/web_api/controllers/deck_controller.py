@@ -8,6 +8,9 @@ from fastapi import APIRouter, HTTPException
 # from src.application.utils import allowed_file_extension
 # from src.application.input import read_input_file
 # from src.web_api.controllers.utils import add_card_conditions
+from src.application.commands.create_deck_command import CreateDeckCommand
+from src.application.model.input.create_deck_request import CreateDeckRequest
+from src.application.model.output.create_deck_response import CreateDeckResponse
 from src.application.queries.get_all_decks_query import GetAllDecksQuery
 from src.application.model.output.deck_response import DeckResponse
 from src.application.queries.get_deck_query import GetDeckQuery
@@ -36,26 +39,21 @@ async def get_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> D
    
     return deck
 
-# @router.route("/decks", methods=['POST'])
-# def add_deck():
-#     body = request.get_json()
+@router.post("/decks", status_code=201)
+def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
+     if deck.name is None:
+        raise HTTPException(status_code=400, detail="Deck name is required")
+     if deck.language_id is None:
+        raise HTTPException(status_code=400, detail="Deck language is required")
 
-#     if not body['name']: 
-#         return 'Name cannot be empty', 400
-#     if not body['language_id']: 
-#         return 'Language cannot be empty', 400
+     command = CreateDeckCommand(deck_repository)
+     id_response = command.handle(deck)
+     return id_response
 
-#     does_deck_exist = db.session.query(exists().where(Deck.name == body['name'])).scalar()
-    
-#     new_deck = Deck(deck_name=body['name'], language_id=body['language_id'])
-
-#     if not does_deck_exist:
-#         db.session.add(new_deck)
-#         db.session.commit()
-#         return "Deck sucesfully added", 200
-#     else:
-#         return "Deck already exists", 409
-
+# @router.route("/decks/<deck_id>/cards", methods=['GET'])
+# def return_cards_in_deck(deck_id):
+#     deck = db.session.query(Deck).filter(Deck.id == deck_id).options(joinedload(Deck.cards)).first()
+#     return jsonify(deck.cards)
 
 # @router.route("/decks/<deck_id>", methods=['DELETE'])
 # def delete_deck(deck_id):
@@ -67,13 +65,6 @@ async def get_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> D
 #     db.session.delete(deck_to_delete)
 #     db.session.commit()
 #     return 'Deck deleted', 200
-
-
-# @router.route("/decks/<deck_id>/cards", methods=['GET'])
-# def return_cards_in_deck(deck_id):
-#     deck = db.session.query(Deck).filter(Deck.id == deck_id).options(joinedload(Deck.cards)).first()
-#     return jsonify(deck.cards)
-
 
 # @router.route("/decks/<deck_id>/cards", methods=['POST'])
 # def add_card(deck_id):
