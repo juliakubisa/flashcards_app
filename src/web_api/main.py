@@ -6,11 +6,12 @@ from src.infrastructure.database.database import db_engine
 
 
 # Initialize web_api with all controllers (routers)
-app = FastAPI()
+app = FastAPI(title='Flashcards')
 app.include_router(deck_controller.router, tags=['Decks'])
 app.include_router(language_controller.router, tags=['Languages'])
 
 # TODO: include CORS settings here
+# TODO: include migrations here
 
 # Generate database schema based on model classes
 ModelBase.metadata.create_all(db_engine)
