@@ -2,7 +2,7 @@ from src.application.model.input.create_deck_request import CreateDeckRequest
 from src.application.model.output.create_deck_response import CreateDeckResponse
 from src.domain.entities.deck import Deck
 from src.domain.exceptions.duplicate_exception import DuplicateException
-from src.infrastructure.repositories.deck_repository import DeckRepository
+from src.infrastructure.database.repositories.deck_repository import DeckRepository
 
 class CreateDeckCommand:
     def __init__(self, repository: DeckRepository):

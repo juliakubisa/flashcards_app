@@ -1,8 +1,8 @@
 from fastapi import Depends
-from src.infrastructure.database import LocalSession
+from src.infrastructure.database.database import LocalSession
 from sqlalchemy.orm import Session
 from typing import Annotated
-from src.infrastructure.repositories.deck_repository import DeckRepository
+from src.infrastructure.database.repositories.deck_repository import DeckRepository
 
 # Ensures there is always a separate db session for each request
 def create_db_session():

@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException
 from src.domain.exceptions.duplicate_exception import DuplicateException
 from .controllers import deck_controller
 from src.domain.entities.model_base import ModelBase
-from src.infrastructure.database import db_engine
+from src.infrastructure.database.database import db_engine
 
 app = FastAPI()
 app.include_router(deck_controller.router)

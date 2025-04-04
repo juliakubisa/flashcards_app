@@ -1,5 +1,5 @@
 from src.application.model.output.deck_response import DeckResponse
-from src.infrastructure.repositories.deck_repository import DeckRepository
+from src.infrastructure.database.repositories.deck_repository import DeckRepository
 
 class GetDeckQuery:
     def __init__(self, repository: DeckRepository):
