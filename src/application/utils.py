@@ -1,7 +1,7 @@
 import csv
 
-from src.domain.deck import Deck
-from src.domain.language import Language
+from src.domain.entities.deck import Deck
+from src.domain.entities.language import Language
 
 csv_lines = []
 

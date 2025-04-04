@@ -1,7 +1,7 @@
 from typing import List
-from src.domain.model_base import ModelBase
-from src.domain.language import Language
-from src.domain.card import Card
+from src.domain.entities.model_base import ModelBase
+from src.domain.entities.language import Language
+from src.domain.entities.card import Card
 from dataclasses import dataclass
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey

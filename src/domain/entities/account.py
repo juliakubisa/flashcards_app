@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from src.domain.model_base import ModelBase
+from src.domain.entities.model_base import ModelBase
 
 
 class Account(ModelBase):

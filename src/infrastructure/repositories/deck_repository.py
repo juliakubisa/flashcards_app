@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.domain.deck import Deck
+from src.domain.entities.deck import Deck
 
 class DeckRepository:
     def __init__(self, db: Session):

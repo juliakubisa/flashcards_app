@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from src.domain.deck import Deck
+from src.domain.entities.deck import Deck
 
 
 class DeckResponse(BaseModel):
