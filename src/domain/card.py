@@ -5,7 +5,6 @@ from sqlalchemy import func, ForeignKey
 from datetime import date
 
 
-@dataclass
 class Card(ModelBase):
     __tablename__ = "card"
 

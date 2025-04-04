@@ -2,7 +2,6 @@ from src.domain.model_base import ModelBase
 from dataclasses import dataclass
 from sqlalchemy.orm import Mapped, mapped_column
 
-@dataclass
 class Language(ModelBase):
     __tablename__ = "language"
 
