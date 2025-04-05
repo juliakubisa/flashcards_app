@@ -1,15 +1,15 @@
 from fastapi import APIRouter
 
+from src.application.commands.delete_card_command import DeleteCardCommand
+from src.web_api.dependencies import CardRepositoryDependency
+
 
 router = APIRouter()
 
-@router.delete("/card/{card_id}")
-def delete_card(card_id: int):
-    pass
-    # card_to_delete = Card.query.get(card_id)
-    # db.session.delete(card_to_delete)
-    # db.session.commit()
-    # return "Card deleted", 200
+@router.delete("/card/{card_id}", status_code=201)
+async def delete_card(card_repository: CardRepositoryDependency, card_id: int):
+    command = DeleteCardCommand(card_repository)
+    command.handle(card_id)
 
 
 @router.put("/card/{card_id}")
