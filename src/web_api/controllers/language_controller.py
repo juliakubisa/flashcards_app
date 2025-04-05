@@ -1,10 +1,12 @@
-from flask import *
-from src.domain.entities.language import Language
-from src.application.sql_database import db
+from fastapi import APIRouter
+from src.application.model.output.language_response import LanguageResponse
+from src.application.queries.get_all_languages_query import GetAllLanguagesQuery
+from src.web_api.dependencies import LanguageRepositoryDependency
 
-language_controller = Blueprint('language_controller', __name__)
+router = APIRouter()
 
-@language_controller.route("/languages", methods=['GET'])
-def return_languages():
-    all_languages = db.session.query(Language).all()
-    return jsonify(all_languages)
+@router.get("/languages")
+def get_languages(language_repository: LanguageRepositoryDependency) -> list[LanguageResponse]:
+    query = GetAllLanguagesQuery(language_repository)
+    languages = query.handle()
+    return languages

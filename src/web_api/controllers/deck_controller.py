@@ -1,13 +1,4 @@
 from fastapi import APIRouter, HTTPException
-# from datetime import date
-# from io import StringIO
-# from sqlalchemy import exists
-# from sqlalchemy.orm import joinedload
-# from src.application.algorithm import Algorithm
-# from src.model.card import Card
-# from src.application.utils import allowed_file_extension
-# from src.application.input import read_input_file
-# from src.web_api.controllers.utils import add_card_conditions
 from src.application.commands.create_deck_command import CreateDeckCommand
 from src.application.commands.delete_deck_command import DeleteDeckCommand
 from src.application.model.input.create_deck_request import CreateDeckRequest

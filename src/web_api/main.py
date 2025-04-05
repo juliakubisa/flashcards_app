@@ -1,22 +1,27 @@
 from fastapi import FastAPI, HTTPException
 from src.domain.exceptions.duplicate_exception import DuplicateException
 from src.domain.exceptions.not_exists_exception import NotExistsException
-from .controllers import deck_controller
+from .controllers import deck_controller, language_controller
 from src.domain.entities.model_base import ModelBase
 from src.infrastructure.database.database import db_engine
 
-app = FastAPI()
-app.include_router(deck_controller.router)
+
+# Initialize web_api with all controllers (routers)
+app = FastAPI(title='Flashcards')
+app.include_router(deck_controller.router, tags=['Decks'])
+app.include_router(language_controller.router, tags=['Languages'])
+
+# TODO: include CORS settings here
+# TODO: include migrations here
 
 # Generate database schema based on model classes
 ModelBase.metadata.create_all(db_engine)
 
+# Handle our custom exceptions
 @app.exception_handler(DuplicateException)
 async def duplicate_exception_handler(request, exc: DuplicateException):
     raise HTTPException(status_code=409, detail=str(exc))
 
 @app.exception_handler(NotExistsException)
-async def duplicate_exception_handler(request, exc: NotExistsException):
+async def not_exists_exception_handler(request, exc: NotExistsException):
     raise HTTPException(status_code=404, detail=str(exc))
-
-
