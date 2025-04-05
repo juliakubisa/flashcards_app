@@ -32,7 +32,7 @@ async def get_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> D
     return deck
 
 @router.post("/decks", status_code=200)
-def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
+async def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
      if deck.name is None:
         raise HTTPException(status_code=400, detail="Deck name is required")
      if deck.language_id is None:
@@ -48,7 +48,7 @@ def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckReque
 #     return jsonify(deck.cards)
 
 @router.delete("/decks/{deck_id}", status_code=201)
-def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
+async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
     command = DeleteDeckCommand(deck_repository)
     command.handle(deck_id)
 

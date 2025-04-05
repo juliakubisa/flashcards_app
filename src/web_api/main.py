@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from src.domain.exceptions.duplicate_exception import DuplicateException
 from src.domain.exceptions.not_exists_exception import NotExistsException
-from .controllers import deck_controller, language_controller
+from .controllers import deck_controller, language_controller, account_controller, card_controller
 from src.domain.entities.model_base import ModelBase
 from src.infrastructure.database.database import db_engine
 
@@ -9,7 +9,9 @@ from src.infrastructure.database.database import db_engine
 # Initialize web_api with all controllers (routers)
 app = FastAPI(title='Flashcards')
 app.include_router(deck_controller.router, tags=['Decks'])
+app.include_router(card_controller.router, tags=['Cards'])
 app.include_router(language_controller.router, tags=['Languages'])
+app.include_router(account_controller.router, tags=['Accounts'])
 
 # TODO: include CORS settings here
 # TODO: include migrations here
