@@ -19,3 +19,7 @@ class DeckRepository:
         self.db.commit()
         self.db.refresh(deck)
         return deck.id
+    
+    def delete(self, deck: Deck) -> None:
+        self.db.delete(deck)
+        self.db.commit()
