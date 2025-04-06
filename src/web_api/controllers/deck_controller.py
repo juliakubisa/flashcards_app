@@ -3,10 +3,12 @@ from src.application.commands.create_deck_command import CreateDeckCommand
 from src.application.commands.delete_deck_command import DeleteDeckCommand
 from src.application.model.input.create_deck_request import CreateDeckRequest
 from src.application.model.output.create_deck_response import CreateDeckResponse
-from src.application.queries.get_all_decks_query import GetAllDecksQuery
 from src.application.model.output.deck_response import DeckResponse
+from src.application.model.output.card_response import CardResponse
+from src.application.queries.get_all_decks_query import GetAllDecksQuery
+from src.application.queries.get_cards_query import GetCardsInDeckQuery
 from src.application.queries.get_deck_query import GetDeckQuery
-from src.web_api.dependencies import DeckRepositoryDependency
+from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
 
 
 router = APIRouter()
@@ -42,10 +44,12 @@ async def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDec
      id_response = command.handle(deck)
      return id_response
 
-# @router.route("/decks/<deck_id>/cards", methods=['GET'])
-# def return_cards_in_deck(deck_id):
-#     deck = db.session.query(Deck).filter(Deck.id == deck_id).options(joinedload(Deck.cards)).first()
-#     return jsonify(deck.cards)
+
+@router.get("/decks/{deck_id}/cards")
+async def get_cards_in_deck(card_repository: CardRepositoryDependency, deck_id: int) -> list[CardResponse]:
+    query = GetCardsInDeckQuery(card_repository)
+    cards = query.handle(deck_id)
+    return cards
 
 @router.delete("/decks/{deck_id}", status_code=201)
 async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
