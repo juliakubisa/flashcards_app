@@ -1,15 +1,13 @@
-from src.application.model.output.deck_response import CardResponse
-from src.infrastructure.database.repositories.deck_repository import DeckRepository
+from src.application.model.output.card_response import CardResponse
+from src.infrastructure.database.repositories.card_repository import CardRepository
 
-class GetDeckQuery:
-    def __init__(self, repository: DeckRepository):
+
+class GetCardsInDeckQuery:
+    def __init__(self, repository: CardRepository):
         self.repository = repository
 
-    def handle(self, deck_id: int) -> CardResponse | None:
-        deck = self.repository.get_by_id(deck_id)
+    def handle(self, deck_id: int) -> list[CardResponse]:
+        cards = self.repository.get_in_deck(deck_id)
 
-        if deck is None:
-            return None
-
-        card_response = CardResponse.from_deck(deck)
-        return card_response
+        cards_response = [CardResponse.from_card(card) for card in cards]
+        return cards_response

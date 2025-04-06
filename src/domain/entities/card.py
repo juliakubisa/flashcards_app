@@ -1,6 +1,5 @@
 from src.domain.entities.model_base import ModelBase
 from sqlalchemy.orm import Mapped, mapped_column
-from dataclasses import dataclass
 from sqlalchemy import func, ForeignKey
 from datetime import date
 

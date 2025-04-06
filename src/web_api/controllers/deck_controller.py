@@ -14,9 +14,9 @@ from src.application.model.output.create_deck_response import CreateDeckResponse
 from src.application.model.output.deck_response import DeckResponse
 from src.application.model.output.card_response import CardResponse
 from src.application.queries.get_all_decks_query import GetAllDecksQuery
-from src.application.queries.get_cards_query import GetCardsQuery
+from src.application.queries.get_cards_query import GetCardsInDeckQuery
 from src.application.queries.get_deck_query import GetDeckQuery
-from src.web_api.dependencies import DeckRepositoryDependency
+from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
 
 
 router = APIRouter()
@@ -54,8 +54,8 @@ def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckReque
 
 
 @router.get("/decks/{deck_id}/cards")
-async def get_cards_in_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> list[CardResponse]:
-    query = GetCardsQuery(deck_repository)
+async def get_cards_in_deck(card_repository: CardRepositoryDependency, deck_id: int) -> list[CardResponse]:
+    query = GetCardsInDeckQuery(card_repository)
     cards = query.handle(deck_id)
     return cards
 
