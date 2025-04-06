@@ -29,12 +29,6 @@ def write_csv(data):
         csvwriter.writerows(data)
 
 
-def max_dict_value_len(length, key, d):
-    value = d[key]
-    max_length = len(value)
-    return max_length <= length
-
-
 def create_default_deck(db_session):
     decks = []
     decks_data = [

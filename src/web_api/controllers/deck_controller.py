@@ -1,7 +1,10 @@
 from fastapi import APIRouter, HTTPException
+from src.application.commands.create_card_command import CreateCardCommand
 from src.application.commands.create_deck_command import CreateDeckCommand
 from src.application.commands.delete_deck_command import DeleteDeckCommand
+from src.application.model.input.create_card_request import CreateCardRequest
 from src.application.model.input.create_deck_request import CreateDeckRequest
+from src.application.model.output.create_card_response import CreateCardResponse
 from src.application.model.output.create_deck_response import CreateDeckResponse
 from src.application.model.output.deck_response import DeckResponse
 from src.application.model.output.card_response import CardResponse
@@ -57,21 +60,12 @@ async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
     command.handle(deck_id)
 
 
-# @router.route("/decks/<deck_id>/cards", methods=['POST'])
-# def add_card(deck_id):
-#     body = request.get_json()
-#     does_card_exist = db.session.query(exists().where(Card.foreign_word == body['foreign_word'])
-#                                        .where(Card.translated_word == body['translated_word'])
-#                                        .where(Card.deck_id == deck_id)).scalar()
+@router.post("/decks/{deck_id}/cards")
+async def add_card(card_repository: CardRepositoryDependency, deck_repository: DeckRepositoryDependency, deck_id: int, card: CreateCardRequest) -> CreateCardResponse:
+    command = CreateCardCommand(card_repository, deck_repository)
+    id_response = command.handle(deck_id, card)
+    return id_response
 
-#     condition_output, new_card = add_card_conditions(does_card_exist, body, deck_id)
-#     if condition_output is True:
-#         db.session.add(new_card)
-#         db.session.commit()
-#         return "Card sucesfully added", 200
-#     else:
-#         # condition can return also an error message (str)
-#         return condition_output, 400 if new_card is None else 409
 
 
 # @router.route("/decks/<deck_id>/file", methods=['POST'])

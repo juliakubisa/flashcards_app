@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from src.domain.exceptions.duplicate_exception import DuplicateException
+from src.domain.exceptions.field_empty_exception import FieldEmptyException
+from src.domain.exceptions.field_too_long_exception import FieldTooLongException
 from src.domain.exceptions.not_exists_exception import NotExistsException
 from .controllers import deck_controller, language_controller, account_controller, card_controller
 from src.domain.entities.model_base import ModelBase
@@ -27,3 +29,11 @@ async def duplicate_exception_handler(request, exc: DuplicateException):
 @app.exception_handler(NotExistsException)
 async def not_exists_exception_handler(request, exc: NotExistsException):
     raise HTTPException(status_code=404, detail=str(exc))
+
+@app.exception_handler(FieldTooLongException)
+async def field_too_long_exception_handler(request, exc: FieldTooLongException):
+    raise HTTPException(status_code=409, detail=str(exc))
+
+@app.exception_handler(FieldEmptyException)
+async def field_empty_exception_handler(request, exc: FieldEmptyException):
+    raise HTTPException(status_code=400, detail=str(exc))
