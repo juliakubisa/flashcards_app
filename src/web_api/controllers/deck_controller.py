@@ -1,14 +1,6 @@
 from fastapi import APIRouter, HTTPException
-# from datetime import date
-# from io import StringIO
-# from sqlalchemy import exists
-# from sqlalchemy.orm import joinedload
-# from src.application.algorithm import Algorithm
-# from src.model.card import Card
-# from src.application.utils import allowed_file_extension
-# from src.application.input import read_input_file
-# from src.web_api.controllers.utils import add_card_conditions
 from src.application.commands.create_deck_command import CreateDeckCommand
+from src.application.commands.delete_deck_command import DeleteDeckCommand
 from src.application.model.input.create_deck_request import CreateDeckRequest
 from src.application.model.output.create_deck_response import CreateDeckResponse
 from src.application.model.output.deck_response import DeckResponse
@@ -41,8 +33,8 @@ async def get_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> D
    
     return deck
 
-@router.post("/decks", status_code=201)
-def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
+@router.post("/decks", status_code=200)
+async def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
      if deck.name is None:
         raise HTTPException(status_code=400, detail="Deck name is required")
      if deck.language_id is None:
@@ -59,16 +51,11 @@ async def get_cards_in_deck(card_repository: CardRepositoryDependency, deck_id: 
     cards = query.handle(deck_id)
     return cards
 
-# @router.route("/decks/<deck_id>", methods=['DELETE'])
-# def delete_deck(deck_id):
-#     deck_to_delete = Deck.query.get(deck_id)
+@router.delete("/decks/{deck_id}", status_code=201)
+async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
+    command = DeleteDeckCommand(deck_repository)
+    command.handle(deck_id)
 
-#     if deck_to_delete is None: 
-#         return 'Deck does not exist', 404
-
-#     db.session.delete(deck_to_delete)
-#     db.session.commit()
-#     return 'Deck deleted', 200
 
 # @router.route("/decks/<deck_id>/cards", methods=['POST'])
 # def add_card(deck_id):
