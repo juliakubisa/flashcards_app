@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.application.commands.delete_card_command import DeleteCardCommand
+from src.application.commands import DeleteCardCommand
 from src.web_api.dependencies import CardRepositoryDependency
 
 

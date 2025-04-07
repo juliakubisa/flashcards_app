@@ -1,16 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from src.application.commands.create_card_command import CreateCardCommand
-from src.application.commands.create_deck_command import CreateDeckCommand
-from src.application.commands.delete_deck_command import DeleteDeckCommand
-from src.application.model.input.create_card_request import CreateCardRequest
-from src.application.model.input.create_deck_request import CreateDeckRequest
-from src.application.model.output.create_card_response import CreateCardResponse
-from src.application.model.output.create_deck_response import CreateDeckResponse
-from src.application.model.output.deck_response import DeckResponse
-from src.application.model.output.card_response import CardResponse
-from src.application.queries.get_all_decks_query import GetAllDecksQuery
-from src.application.queries.get_cards_query import GetCardsInDeckQuery
-from src.application.queries.get_deck_query import GetDeckQuery
+from src.application.model.input import CreateCardRequest, CreateDeckRequest
+from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse
+from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand
+from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery
 from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
 
 

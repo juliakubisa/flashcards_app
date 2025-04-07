@@ -1,8 +1,8 @@
-from src.application.model.input.create_deck_request import CreateDeckRequest
-from src.application.model.output.create_deck_response import CreateDeckResponse
-from src.domain.entities.deck import Deck
-from src.domain.exceptions.duplicate_exception import DuplicateException
-from src.infrastructure.database.repositories.deck_repository import DeckRepository
+from src.application.model.input import CreateDeckRequest
+from src.application.model.output import CreateDeckResponse
+from src.domain.entities import Deck
+from src.domain.exceptions import DuplicateException
+from src.infrastructure.database.repositories import DeckRepository
 
 class CreateDeckCommand:
     def __init__(self, repository: DeckRepository):

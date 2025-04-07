@@ -1,5 +1,5 @@
-from src.application.model.output.language_response import LanguageResponse
-from src.infrastructure.database.repositories.language_repository import LanguageRepository
+from src.application.model.output import LanguageResponse
+from src.infrastructure.database.repositories import LanguageRepository
 
 class GetAllLanguagesQuery:
     def __init__(self, repository: LanguageRepository):

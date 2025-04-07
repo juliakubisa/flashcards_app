@@ -1,5 +1,5 @@
-from src.application.model.output.card_response import CardResponse
-from src.infrastructure.database.repositories.card_repository import CardRepository
+from src.application.model.output import CardResponse
+from src.infrastructure.database.repositories import CardRepository
 
 
 class GetCardsInDeckQuery:

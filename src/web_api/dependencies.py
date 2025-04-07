@@ -2,9 +2,7 @@ from fastapi import Depends
 from src.infrastructure.database.database import LocalSession
 from sqlalchemy.orm import Session
 from typing import Annotated
-from src.infrastructure.database.repositories.card_repository import CardRepository
-from src.infrastructure.database.repositories.deck_repository import DeckRepository
-from src.infrastructure.database.repositories.language_repository import LanguageRepository
+from src.infrastructure.database.repositories import CardRepository, DeckRepository, LanguageRepository
 
 # DatabaseSession
 # Ensures there is always a separate db session for each request

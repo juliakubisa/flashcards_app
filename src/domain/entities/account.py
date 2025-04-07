@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from src.domain.entities.model_base import ModelBase
+from src.domain.entities.entity_base import EntityBase
 
 
-class Account(ModelBase):
+class Account(EntityBase):
     __tablename__ = "account"
 
     id: Mapped[int] = mapped_column(primary_key=True)

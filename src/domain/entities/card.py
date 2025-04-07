@@ -1,10 +1,10 @@
-from src.domain.entities.model_base import ModelBase
+from src.domain.entities.entity_base import EntityBase
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import func, ForeignKey
 from datetime import date
 
 
-class Card(ModelBase):
+class Card(EntityBase):
     __tablename__ = "card"
 
     # Basic Information

@@ -1,5 +1,5 @@
-from src.domain.exceptions.not_exists_exception import NotExistsException
-from src.infrastructure.database.repositories.deck_repository import DeckRepository
+from src.domain.exceptions import NotExistsException
+from src.infrastructure.database.repositories import DeckRepository
 
 class DeleteDeckCommand:
     def __init__(self, repository: DeckRepository):

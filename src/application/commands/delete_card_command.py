@@ -1,5 +1,5 @@
-from src.domain.exceptions.not_exists_exception import NotExistsException
-from src.infrastructure.database.repositories.card_repository import CardRepository
+from src.domain.exceptions import NotExistsException
+from src.infrastructure.database.repositories import CardRepository
 
 class DeleteCardCommand:
     def __init__(self, repository: CardRepository):

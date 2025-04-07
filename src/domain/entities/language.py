@@ -1,8 +1,7 @@
-from src.domain.entities.model_base import ModelBase
-from dataclasses import dataclass
+from src.domain.entities.entity_base import EntityBase
 from sqlalchemy.orm import Mapped, mapped_column
 
-class Language(ModelBase):
+class Language(EntityBase):
     __tablename__ = "language"
 
     id: Mapped[str] = mapped_column(primary_key=True)

@@ -1,10 +1,7 @@
 from fastapi import FastAPI, HTTPException
-from src.domain.exceptions.duplicate_exception import DuplicateException
-from src.domain.exceptions.field_empty_exception import FieldEmptyException
-from src.domain.exceptions.field_too_long_exception import FieldTooLongException
-from src.domain.exceptions.not_exists_exception import NotExistsException
+from src.domain.exceptions import DuplicateException, NotExistsException, FieldEmptyException, FieldTooLongException
 from .controllers import deck_controller, language_controller, account_controller, card_controller
-from src.domain.entities.model_base import ModelBase
+from src.domain.entities import EntityBase
 from src.infrastructure.database.database import db_engine
 
 
@@ -19,7 +16,7 @@ app.include_router(account_controller.router, tags=['Accounts'])
 # TODO: include migrations here
 
 # Generate database schema based on model classes
-ModelBase.metadata.create_all(db_engine)
+EntityBase.metadata.create_all(db_engine)
 
 # Handle our custom exceptions
 @app.exception_handler(DuplicateException)

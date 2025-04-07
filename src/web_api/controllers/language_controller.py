@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from src.application.model.output.language_response import LanguageResponse
-from src.application.queries.get_all_languages_query import GetAllLanguagesQuery
+from src.application.model.output import LanguageResponse
+from src.application.queries import GetAllLanguagesQuery
 from src.web_api.dependencies import LanguageRepositoryDependency
 
 router = APIRouter()
