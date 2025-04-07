@@ -3,6 +3,9 @@ from src.infrastructure.database.database import LocalSession
 from sqlalchemy.orm import Session
 from typing import Annotated
 from src.infrastructure.database.repositories import CardRepository, DeckRepository, LanguageRepository
+from src.infrastructure.database.repositories.account_repository import AccountRepository
+from src.infrastructure.services import JWTTokenService, GoogleAuthService
+from src.web_api.settings import Settings
 
 # DatabaseSession
 # Ensures there is always a separate db session for each request
@@ -29,4 +32,25 @@ def create_language_repository(db_session: DatabaseSession) -> LanguageRepositor
     return LanguageRepository(db_session)
 
 LanguageRepositoryDependency = Annotated[LanguageRepository, Depends(create_language_repository)]
+
+# AccountRepository
+def create_account_repository(db_session: DatabaseSession) -> AccountRepository:
+    return AccountRepository(db_session)
+
+AccountRepositoryDependency = Annotated[AccountRepository, Depends(create_account_repository)]
+
+# JWTTokenService
+def create_jwt_token_service() -> JWTTokenService:
+    jwt_secret = Settings.load().jwt_secret
+    return JWTTokenService(jwt_secret)
+
+JWTTokenServiceDependency = Annotated[JWTTokenService, Depends(create_jwt_token_service)]
+
+# GoogleAuthService
+def create_google_auth_service() -> GoogleAuthService:
+    google_client_id = Settings.load().google_client_id
+    return GoogleAuthService(google_client_id)
+
+GoogleAuthServiceDependency = Annotated[GoogleAuthService, Depends(create_google_auth_service)]
+
 
