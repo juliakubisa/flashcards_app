@@ -7,10 +7,10 @@ from src.infrastructure.database.database import db_engine
 
 # Initialize web_api with all controllers (routers)
 app = FastAPI(title='Flashcards')
-app.include_router(deck_controller.router, tags=['Decks'])
-app.include_router(card_controller.router, tags=['Cards'])
-app.include_router(language_controller.router, tags=['Languages'])
-app.include_router(account_controller.router, tags=['Accounts'])
+app.include_router(deck_controller.router)
+app.include_router(card_controller.router)
+app.include_router(language_controller.router)
+app.include_router(account_controller.router)
 
 # TODO: include CORS settings here
 # TODO: include migrations here

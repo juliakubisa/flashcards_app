@@ -3,15 +3,15 @@ from src.application.commands import DeleteCardCommand
 from src.web_api.dependencies import CardRepositoryDependency
 
 
-router = APIRouter()
+router = APIRouter(prefix="/cards", tags=['Cards'])
 
-@router.delete("/card/{card_id}", status_code=201)
+@router.delete("/{card_id}", status_code=201)
 async def delete_card(card_repository: CardRepositoryDependency, card_id: int):
     command = DeleteCardCommand(card_repository)
     command.handle(card_id)
 
 
-@router.put("/card/{card_id}")
+@router.put("/{card_id}")
 async def update_card(card_id: int):
     pass
     # body = request.get_json()

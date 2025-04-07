@@ -6,41 +6,41 @@ from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDe
 from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
 
 
-router = APIRouter()
+router = APIRouter(prefix="/decks", tags=['Decks'])
 
-@router.get("/decks")
+@router.get("")
 async def get_all_decks(deck_repository: DeckRepositoryDependency) -> list[DeckResponse]:
         query = GetAllDecksQuery(deck_repository)
         decks = query.handle()
         return decks
 
 
-@router.get("/decks/{deck_id}")
+@router.get("/{deck_id}")
 async def get_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> DeckResponse:
     query = GetDeckQuery(deck_repository)
     deck = query.handle(deck_id)
     return deck
 
-@router.post("/decks")
+@router.post("")
 async def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
      command = CreateDeckCommand(deck_repository)
      id_response = command.handle(deck)
      return id_response
 
 
-@router.get("/decks/{deck_id}/cards")
+@router.get("/{deck_id}/cards")
 async def get_cards_in_deck(card_repository: CardRepositoryDependency, deck_id: int) -> list[CardResponse]:
     query = GetCardsInDeckQuery(card_repository)
     cards = query.handle(deck_id)
     return cards
 
-@router.delete("/decks/{deck_id}", status_code=201)
+@router.delete("/{deck_id}", status_code=201)
 async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
     command = DeleteDeckCommand(deck_repository)
     command.handle(deck_id)
 
 
-@router.post("/decks/{deck_id}/cards")
+@router.post("/{deck_id}/cards")
 async def create_card(card_repository: CardRepositoryDependency, deck_repository: DeckRepositoryDependency, deck_id: int, card: CreateCardRequest) -> CreateCardResponse:
     command = CreateCardCommand(card_repository, deck_repository)
     id_response = command.handle(deck_id, card)

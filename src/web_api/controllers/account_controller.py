@@ -9,10 +9,10 @@ import secrets
 import string
 
 
-router = APIRouter()
+router = APIRouter(prefix="/accounts", tags=['Accounts'])
 
-@router.post('/register')
-async def register():
+@router.post('/')
+async def create_acccount():
     pass
     # name = request.json.get('name')
     # email = request.json.get('email')
@@ -36,7 +36,7 @@ async def register():
     # return jsonify({"message": "Account registered successfully"}), 201
 
 
-@router.post('/login')
+@router.post('/token')
 async def login():
     pass
     # email = request.json.get('email')
@@ -58,7 +58,7 @@ async def login():
 
     # return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token, "email": email, "name": account.name}), 200
 
-@router.post('/login_with_google')
+@router.post('/token/google')
 async def login_with_google():
     pass
     # try:
@@ -86,7 +86,7 @@ async def login_with_google():
 
     # return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token, "email": user_email, "name": account.name}), 200
 
-@router.post('/refresh_token')
+@router.post('/token/refresh')
 async def refresh_token():
     pass
     # refresh_token = request.json.get('refresh_token')
