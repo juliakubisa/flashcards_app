@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from src.application.model.input import CreateCardRequest, CreateDeckRequest
 from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse
 from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand
@@ -17,24 +17,12 @@ async def get_all_decks(deck_repository: DeckRepositoryDependency) -> list[DeckR
 
 @router.get("/decks/{deck_id}")
 async def get_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> DeckResponse:
-    if deck_id is None:
-        raise HTTPException(status_code=400, detail="Deck ID is required")
-
     query = GetDeckQuery(deck_repository)
     deck = query.handle(deck_id)
-    
-    if deck is None:
-        raise HTTPException(status_code=404, detail="Deck not found")
-   
     return deck
 
-@router.post("/decks", status_code=200)
+@router.post("/decks")
 async def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
-     if deck.name is None:
-        raise HTTPException(status_code=400, detail="Deck name is required")
-     if deck.language_id is None:
-        raise HTTPException(status_code=400, detail="Deck language is required")
-
      command = CreateDeckCommand(deck_repository)
      id_response = command.handle(deck)
      return id_response
@@ -53,7 +41,7 @@ async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
 
 
 @router.post("/decks/{deck_id}/cards")
-async def add_card(card_repository: CardRepositoryDependency, deck_repository: DeckRepositoryDependency, deck_id: int, card: CreateCardRequest) -> CreateCardResponse:
+async def create_card(card_repository: CardRepositoryDependency, deck_repository: DeckRepositoryDependency, deck_id: int, card: CreateCardRequest) -> CreateCardResponse:
     command = CreateCardCommand(card_repository, deck_repository)
     id_response = command.handle(deck_id, card)
     return id_response

@@ -12,7 +12,7 @@ async def delete_card(card_repository: CardRepositoryDependency, card_id: int):
 
 
 @router.put("/card/{card_id}")
-def update_card(card_id: int):
+async def update_card(card_id: int):
     pass
     # body = request.get_json()
     # does_card_exist = db.session.query(exists()

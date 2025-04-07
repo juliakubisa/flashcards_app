@@ -12,7 +12,7 @@ import string
 router = APIRouter()
 
 @router.post('/register')
-def register():
+async def register():
     pass
     # name = request.json.get('name')
     # email = request.json.get('email')
@@ -37,7 +37,7 @@ def register():
 
 
 @router.post('/login')
-def login():
+async def login():
     pass
     # email = request.json.get('email')
     # password = request.json.get('password')
@@ -59,7 +59,7 @@ def login():
     # return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token, "email": email, "name": account.name}), 200
 
 @router.post('/login_with_google')
-def login_with_google():
+async def login_with_google():
     pass
     # try:
     #     google_credential = request.json.get('idToken')
@@ -87,7 +87,7 @@ def login_with_google():
     # return jsonify({"message": "Successful login", "access_token": access_token, "refresh_token": refresh_token, "email": user_email, "name": account.name}), 200
 
 @router.post('/refresh_token')
-def refresh_token():
+async def refresh_token():
     pass
     # refresh_token = request.json.get('refresh_token')
 
