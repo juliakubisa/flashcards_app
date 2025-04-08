@@ -24,3 +24,7 @@ class CardRepository:
     def delete(self, card: Card) -> None:
         self.db.delete(card)
         self.db.commit()
+
+    def save_changes(self, card: Card) -> None:
+        self.db.commit()
+        self.db.refresh(card) 
