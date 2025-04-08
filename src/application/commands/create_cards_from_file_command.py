@@ -9,5 +9,5 @@ class CreateCardsFromFileCommand:
         self.card_repository = card_repository
         self.deck_repository = deck_repository
 
-    def handle(self, deck_id: int, file_bytes: bytes) -> list[CreateCardResponse]:
+    def handle(self, deck_id: int, file_bytes: bytes, delimiter: str) -> list[CreateCardResponse]:
         pass
