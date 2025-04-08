@@ -1,7 +1,8 @@
-from fastapi import APIRouter
-from src.application.model.input import CreateCardRequest, CreateDeckRequest
+from typing import Annotated
+from fastapi import APIRouter, File, Form, UploadFile
+from src.application.model.input import CreateCardRequest, CreateDeckRequest, CreateCardsFromFileRequest
 from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse
-from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand
+from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand
 from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery
 from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
 
@@ -41,30 +42,42 @@ async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
 
 
 @router.post("/{deck_id}/cards")
-async def create_card(card_repository: CardRepositoryDependency, deck_repository: DeckRepositoryDependency, deck_id: int, card: CreateCardRequest) -> CreateCardResponse:
+async def create_card(card_repository: CardRepositoryDependency, 
+                      deck_repository: DeckRepositoryDependency, deck_id: int, 
+                      card: CreateCardRequest) -> CreateCardResponse:
     command = CreateCardCommand(card_repository, deck_repository)
     id_response = command.handle(deck_id, card)
     return id_response
 
 
+@router.post("/{deck_id}/file")
+async def create_cards_from_file(card_repository: CardRepositoryDependency, 
+                                deck_repository: DeckRepositoryDependency, 
+                                deck_id: int, 
+                                file: Annotated[UploadFile, File()],
+                                delimiter: Annotated[str, Form()]) -> list[CreateCardResponse]:
 
-# @router.route("/decks/<deck_id>/file", methods=['POST'])
-# def upload_cards_from_file(deck_id):
-#     if request.method == 'POST':
-#         if 'file' not in request.files:
-#             return 'No selected file', 400
-#         file = request.files['file']
-#         if file.filename == '':
-#             return 'No selected file', 400
-#         if not allowed_file_extension(file.filename):
-#             return 'Unsupported file extension', 400
-#         if file and allowed_file_extension(file.filename):
-#             raw_data = StringIO(file.stream.read().decode("UTF8"), newline=None)
-#             delimiter = request.form['delimiter']
-#             cards_unknown_unique = read_input_file(raw_data, deck_id, delimiter)
-#             db.session.add_all(cards_unknown_unique)
-#             db.session.commit()
-#             return 'Cards added', 200
+    file
+    return []
+    #  command = CreateCardsFromFileCommand(card_repository, deck_repository)
+    #  command.handle(deck_id, file_bytes)
+
+
+    # if request.method == 'POST':
+    #     if 'file' not in request.files:
+    #         return 'No selected file', 400
+    #     file = request.files['file']
+    #     if file.filename == '':
+    #         return 'No selected file', 400
+    #     if not allowed_file_extension(file.filename):
+    #         return 'Unsupported file extension', 400
+    #     if file and allowed_file_extension(file.filename):
+    #         raw_data = StringIO(file.stream.read().decode("UTF8"), newline=None)
+    #         delimiter = request.form['delimiter']
+    #         cards_unknown_unique = read_input_file(raw_data, deck_id, delimiter)
+    #         db.session.add_all(cards_unknown_unique)
+    #         db.session.commit()
+    #         return 'Cards added', 200
 
 
 # @router.route("/decks/<deck_id>/quiz/cards", methods=['GET'])

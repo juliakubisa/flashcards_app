@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, File
 from src.infrastructure.database.database import LocalSession
 from sqlalchemy.orm import Session
 from typing import Annotated
@@ -52,5 +52,3 @@ def create_google_auth_service() -> GoogleAuthService:
     return GoogleAuthService(google_client_id)
 
 GoogleAuthServiceDependency = Annotated[GoogleAuthService, Depends(create_google_auth_service)]
-
-
