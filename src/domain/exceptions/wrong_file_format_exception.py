@@ -1,0 +1,2 @@
+class WrongFileFormatException(Exception):
+    pass

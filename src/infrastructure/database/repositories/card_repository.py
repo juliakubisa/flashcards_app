@@ -20,6 +20,15 @@ class CardRepository:
         self.db.commit()
         self.db.refresh(card)
         return card.id
+    
+    def add_many(self, cards: list[Card]) -> list[int]:
+        self.db.add_all(cards)
+        self.db.commit()
+
+        for card in cards:
+            self.db.refresh(card)
+
+        return [c.id for c in cards]
 
     def delete(self, card: Card) -> None:
         self.db.delete(card)

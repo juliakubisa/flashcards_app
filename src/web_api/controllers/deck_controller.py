@@ -1,6 +1,6 @@
 from typing import Annotated
-from fastapi import APIRouter, File, Form, UploadFile
-from src.application.model.input import CreateCardRequest, CreateDeckRequest, CreateCardsFromFileRequest
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from src.application.model.input import CreateCardRequest, CreateDeckRequest
 from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse
 from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand
 from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery
@@ -22,7 +22,7 @@ async def get_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> D
     deck = query.handle(deck_id)
     return deck
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
      command = CreateDeckCommand(deck_repository)
      id_response = command.handle(deck)
@@ -35,13 +35,13 @@ async def get_cards_in_deck(card_repository: CardRepositoryDependency, deck_id: 
     cards = query.handle(deck_id)
     return cards
 
-@router.delete("/{deck_id}", status_code=201)
+@router.delete("/{deck_id}", status_code=204)
 async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
     command = DeleteDeckCommand(deck_repository)
     command.handle(deck_id)
 
 
-@router.post("/{deck_id}/cards")
+@router.post("/{deck_id}/cards", status_code=201)
 async def create_card(card_repository: CardRepositoryDependency, 
                       deck_repository: DeckRepositoryDependency, deck_id: int, 
                       card: CreateCardRequest) -> CreateCardResponse:
@@ -50,35 +50,31 @@ async def create_card(card_repository: CardRepositoryDependency,
     return id_response
 
 
-@router.post("/{deck_id}/file")
+@router.post("/{deck_id}/file", status_code=201)
 async def create_cards_from_file(card_repository: CardRepositoryDependency, 
                                 deck_repository: DeckRepositoryDependency, 
                                 deck_id: int, 
                                 file: Annotated[UploadFile, File()],
                                 delimiter: Annotated[str, Form()]) -> list[CreateCardResponse]:
+    
+    if file is None:
+        raise HTTPException(400, "File is required")
 
-    file
-    return []
-    #  command = CreateCardsFromFileCommand(card_repository, deck_repository)
-    #  command.handle(deck_id, file_bytes)
+    if file.size > 10 * 1024 * 1024: # 10 MB
+        raise HTTPException(413, "File too large")
 
-
-    # if request.method == 'POST':
-    #     if 'file' not in request.files:
-    #         return 'No selected file', 400
-    #     file = request.files['file']
-    #     if file.filename == '':
-    #         return 'No selected file', 400
-    #     if not allowed_file_extension(file.filename):
-    #         return 'Unsupported file extension', 400
-    #     if file and allowed_file_extension(file.filename):
-    #         raw_data = StringIO(file.stream.read().decode("UTF8"), newline=None)
-    #         delimiter = request.form['delimiter']
-    #         cards_unknown_unique = read_input_file(raw_data, deck_id, delimiter)
-    #         db.session.add_all(cards_unknown_unique)
-    #         db.session.commit()
-    #         return 'Cards added', 200
-
+    if not file.filename.endswith(".txt") and not file.filename.endswith(".csv"):
+        raise HTTPException(400, "Unsupported file extension")
+    
+    try:   
+        file_content = (await file.read()).decode("utf-8")
+    except UnicodeDecodeError:
+        raise HTTPException(400, "Detected a non-unicode character")
+    
+    command = CreateCardsFromFileCommand(card_repository, deck_repository)
+    ids_response = command.handle(deck_id, file_content, delimiter)
+    
+    return ids_response
 
 # @router.route("/decks/<deck_id>/quiz/cards", methods=['GET'])
 # def return_quiz_cards(deck_id):

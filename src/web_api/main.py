@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from src.domain.exceptions import DuplicateException, NotExistsException, FieldEmptyException, FieldTooLongException, TokenInvalidException, TokenExpiredException
+from src.domain.exceptions import DuplicateException, NotExistsException, FieldEmptyException, FieldTooLongException, TokenInvalidException, TokenExpiredException, WrongFileFormatException
 from .controllers import deck_controller, language_controller, account_controller, card_controller
 from src.domain.entities import EntityBase
 from src.infrastructure.database.database import db_engine
@@ -43,3 +43,7 @@ async def token_invalid_exception_handler(request, exc: TokenInvalidException):
 @app.exception_handler(TokenExpiredException)
 async def token_expired_exception_handler(request, exc: TokenExpiredException):
     raise HTTPException(status_code=401, detail=str(exc))
+
+@app.exception_handler(WrongFileFormatException)
+async def wrong_file_format_exception_handler(request, exc: WrongFileFormatException):
+    raise HTTPException(status_code=400, detail=str(exc))
