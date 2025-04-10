@@ -1,12 +1,13 @@
-from datetime import date
-import numpy as np
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from src.domain.cards_to_quiz_dto import QuizCardDTO
-from difflib import get_close_matches
+# from datetime import date
+# import numpy as np
+# import pandas as pd
+# from sklearn.preprocessing import StandardScaler
+# from src.domain.cards_to_quiz_dto import QuizCardDTO
+# from difflib import get_close_matches
+# import random
+# import warnings
+# warnings.filterwarnings("ignore")
 import random
-import warnings
-warnings.filterwarnings("ignore")
 
 
 class Algorithm:
@@ -23,7 +24,7 @@ class Algorithm:
         # self.standarized_variables_list = ['days_since_last_review_s', 'number_correct_answers_s', 'answer_time_s']
 
     def select_quiz_cards(self):
-        return self.all_cards
+        return random.sample(self.all_cards, self.num_cards)
         
     # def set_weights(self):
     #     # The cards that were quizzed before

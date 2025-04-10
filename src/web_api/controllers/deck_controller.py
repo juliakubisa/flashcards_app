@@ -77,9 +77,9 @@ async def create_cards_from_file(card_repository: CardRepositoryDependency,
     return ids_response
 
 @router.get("/{deck_id}/quiz/cards")
-async def get_quiz_cards(card_repository: CardRepositoryDependency, deck_id: int, num_cards: int) -> list[QuizCardResponse]:
+async def get_quiz_cards(card_repository: CardRepositoryDependency, deck_id: int, number_of_cards: int) -> list[QuizCardResponse]:
     query = GetQuizCardsQuery(card_repository)
-    cards = query.handle(deck_id, num_cards)
+    cards = query.handle(deck_id, number_of_cards)
     return cards
 
 
