@@ -8,6 +8,8 @@
 # import warnings
 # warnings.filterwarnings("ignore")
 import random
+from src.application.model.output import QuizCardResponse
+from src.domain.entities import Card
 
 
 class Algorithm:
@@ -15,7 +17,7 @@ class Algorithm:
     #         C*number_correct_answers + D*answer_time
     #     where A, B, C, D are weights"""
 
-    def __init__(self, all_cards, num_cards):
+    def __init__(self, all_cards: list[Card], num_cards: int):
         self.all_cards = all_cards
         self.num_cards = num_cards
         # self.df = pd.DataFrame([c.__dict__ for c in cards])  # Convert Card objects to pandas dataframe
@@ -23,8 +25,10 @@ class Algorithm:
         # self.standarize_variables_list = ['days_since_last_review', 'number_correct_answers', 'answer_time']
         # self.standarized_variables_list = ['days_since_last_review_s', 'number_correct_answers_s', 'answer_time_s']
 
-    def select_quiz_cards(self):
-        return random.sample(self.all_cards, self.num_cards)
+    def select_quiz_cards(self) -> list[QuizCardResponse]:
+        cards = random.sample(self.all_cards, self.num_cards)
+        quiz_cards = [QuizCardResponse(id=card.id, foreign_word=card.foreign_word, translated_word=card.translated_word, wrong_answers=['1', '2', '3']) for card in cards]
+        return quiz_cards
         
     # def set_weights(self):
     #     # The cards that were quizzed before
