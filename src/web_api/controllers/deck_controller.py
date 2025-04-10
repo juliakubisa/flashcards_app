@@ -1,9 +1,9 @@
 from typing import Annotated
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from src.application.model.input import CreateCardRequest, CreateDeckRequest
-from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse
+from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse, QuizCardResponse
 from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand
-from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery
+from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery, GetQuizCardsQuery
 from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
 
 
@@ -76,17 +76,12 @@ async def create_cards_from_file(card_repository: CardRepositoryDependency,
     
     return ids_response
 
-# @router.route("/decks/<deck_id>/quiz/cards", methods=['GET'])
-# def return_quiz_cards(deck_id):
-#     all_cards = db.session.query(Deck).filter(Deck.id == deck_id).options(joinedload(Deck.cards)).first().cards
-#     num_cards = int(request.args.get('number_of_cards'))
-#     if len(all_cards) >= num_cards and len(all_cards) >= 10:
-#         algorithm = Algorithm(all_cards, num_cards)
-#         algorithm.set_weights()
-#         cards_to_quiz = algorithm.select_quiz_cards()
-#         return jsonify([card.__dict__ for card in cards_to_quiz])
-#     else:
-#         return "Too few cards to quiz", 400
+@router.get("/{deck_id}/quiz/cards")
+async def get_quiz_cards(card_repository: CardRepositoryDependency, deck_id: int, num_cards: int) -> list[QuizCardResponse]:
+    query = GetQuizCardsQuery(card_repository)
+    cards = query.handle(deck_id, num_cards)
+    return cards
+
 
 
 # @router.route("/decks/<deck_id>/quiz/results", methods=['PUT'])
