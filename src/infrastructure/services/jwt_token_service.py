@@ -33,6 +33,6 @@ class JWTTokenService():
         try:
             return jwt.decode(token, self.jwt_secret, algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
-            raise TokenExpiredException('Refresh token has expired')
+            raise TokenExpiredException('Token has expired')
         except jwt.InvalidTokenError:
-            raise TokenInvalidException('Refresh token is invalid')
+            raise TokenInvalidException('Token is invalid')

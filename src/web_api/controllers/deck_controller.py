@@ -1,13 +1,14 @@
 from typing import Annotated
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from src.application.model.input import CreateCardRequest, CreateDeckRequest
 from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse
 from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand
 from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery
+from src.web_api.authentication_service import authenticate
 from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
 
 
-router = APIRouter(prefix="/decks", tags=['Decks'])
+router = APIRouter(prefix="/decks", tags=['Decks'], dependencies=[Depends(authenticate)])
 
 @router.get("")
 async def get_all_decks(deck_repository: DeckRepositoryDependency) -> list[DeckResponse]:
@@ -22,6 +23,7 @@ async def get_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> D
     deck = query.handle(deck_id)
     return deck
 
+
 @router.post("", status_code=201)
 async def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
      command = CreateDeckCommand(deck_repository)
@@ -34,6 +36,7 @@ async def get_cards_in_deck(card_repository: CardRepositoryDependency, deck_id: 
     query = GetCardsInDeckQuery(card_repository)
     cards = query.handle(deck_id)
     return cards
+
 
 @router.delete("/{deck_id}", status_code=204)
 async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):

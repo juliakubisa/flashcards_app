@@ -29,16 +29,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# TODO: include authentication/authorization
-
 @app.on_event("startup")
 def on_startup():
     # Generate database schema based on model classes
     EntityBase.metadata.create_all(db_engine)
 
+    # TODO: Fix and uncomment
     # Run database migrations
-    config = Config(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'infrastructure', 'database', 'alembic.ini')))
-    command.upgrade(config, "head")
+    # config = Config(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'infrastructure', 'database', 'alembic.ini')))
+    # command.upgrade(config, "head")
 
 
 # Handle our custom exceptions

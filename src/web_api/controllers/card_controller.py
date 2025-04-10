@@ -1,10 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from src.application.commands import DeleteCardCommand, UpdateCardCommand
 from src.application.model.input.create_card_request import CreateCardRequest
+from src.web_api.authentication_service import authenticate
 from src.web_api.dependencies import CardRepositoryDependency
 
 
-router = APIRouter(prefix="/cards", tags=['Cards'])
+router = APIRouter(prefix="/cards", tags=['Cards'], dependencies=[Depends(authenticate)])
 
 @router.delete("/{card_id}", status_code=204)
 async def delete_card(card_repository: CardRepositoryDependency, card_id: int):

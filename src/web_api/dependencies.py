@@ -1,4 +1,4 @@
-from fastapi import Depends, File
+from fastapi import Depends
 from src.infrastructure.database.database import LocalSession
 from sqlalchemy.orm import Session
 from typing import Annotated
