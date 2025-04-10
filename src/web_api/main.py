@@ -1,33 +1,50 @@
-from flask import *
 import os
-from flask_cors import CORS
-from src.application.utils import create_default_deck
-from src.web_api.controllers import account_controller, card_controller, deck_controller, language_controller
-from src.application.sql_database import db
-from src.application.update_languages_table import insert_languages
-from flask_migrate import Migrate, upgrade
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from src.domain.exceptions.duplicate_exception import DuplicateException
+from .controllers import deck_controller, language_controller, account_controller, card_controller
+from src.domain.entities import EntityBase
+from src.infrastructure.database.database import db_engine
+from src.domain.exceptions import DuplicateException, NotExistsException, FieldEmptyException, FieldTooLongException, TokenInvalidException, TokenExpiredException, WrongFileFormatException
+from .exception_handlers import duplicate_exception_handler, not_exists_exception_handler, field_empty_exception_handler, field_too_long_exception_handler, token_invalid_exception_handler, token_expired_exception_handler, wrong_file_format_exception_handler
+from alembic.config import Config
+from alembic import command
+
+# Initialize web_api with all controllers (routers)
+app = FastAPI(title='Flashcards')
+app.include_router(deck_controller.router)
+app.include_router(card_controller.router)
+app.include_router(language_controller.router)
+app.include_router(account_controller.router)
+
+# Add CORS settings
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        'http://localhost:5173',
+        'https://flashcards-frontend-bice.vercel.app'
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.on_event("startup")
+def on_startup():
+    # Generate database schema based on model classes
+    EntityBase.metadata.create_all(db_engine)
+
+    # TODO: Fix and uncomment
+    # Run database migrations
+    # config = Config(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'infrastructure', 'database', 'alembic.ini')))
+    # command.upgrade(config, "head")
 
 
-app = Flask(__name__)
-
-CORS(app, origins='*')
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_CONNECTION_STRING']
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000  # restrict max size to 16MB
-app.config['JWT_SECRET'] = os.environ['JWT_SECRET']
-app.config['GOOGLE_CLIENT_ID'] = os.environ['GOOGLE_CLIENT_ID']
-
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
-    db.session.commit()
-    migrate = Migrate(app, db)
-    upgrade()
-    insert_languages(db.session)
-
-app.register_blueprint(card_controller.card_controller)
-app.register_blueprint(deck_controller.deck_controller)
-app.register_blueprint(language_controller.language_controller)
-app.register_blueprint(account_controller.account_controller)
-
+# Handle our custom exceptions
+app.add_exception_handler(DuplicateException, duplicate_exception_handler)
+app.add_exception_handler(NotExistsException, not_exists_exception_handler)
+app.add_exception_handler(FieldEmptyException, field_empty_exception_handler)
+app.add_exception_handler(FieldTooLongException, field_too_long_exception_handler)
+app.add_exception_handler(TokenInvalidException, token_invalid_exception_handler)
+app.add_exception_handler(TokenExpiredException, token_expired_exception_handler)
+app.add_exception_handler(WrongFileFormatException, wrong_file_format_exception_handler)

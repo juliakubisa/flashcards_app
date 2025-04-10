@@ -1,0 +1,2 @@
+class FieldTooLongException(Exception):
+    pass

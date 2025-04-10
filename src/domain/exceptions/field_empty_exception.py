@@ -1,0 +1,2 @@
+class FieldEmptyException(Exception):
+    pass

@@ -1,7 +1,7 @@
 import csv
 
-from src.model.deck import Deck
-from src.model.language import Language
+from src.domain.entities.deck import Deck
+from src.domain.entities.language import Language
 
 csv_lines = []
 
@@ -27,12 +27,6 @@ def write_csv(data):
     with open('premade_data/example_csv2.csv', 'w') as f:
         csvwriter = csv.writer(f, delimiter="-")
         csvwriter.writerows(data)
-
-
-def max_dict_value_len(length, key, d):
-    value = d[key]
-    max_length = len(value)
-    return max_length <= length
 
 
 def create_default_deck(db_session):

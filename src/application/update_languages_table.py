@@ -1,4 +1,4 @@
-from src.model.language import Language
+from src.domain.entities.language import Language
 import os
 
 

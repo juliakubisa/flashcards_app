@@ -2,7 +2,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-from src.model.cards_to_quiz_dto import QuizCardDTO
+from src.domain.cards_to_quiz_dto import QuizCardDTO
 from difflib import get_close_matches
 import random
 import warnings
