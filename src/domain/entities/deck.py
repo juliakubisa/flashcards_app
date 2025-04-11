@@ -1,7 +1,7 @@
 from typing import List
-from src.domain.entities.entity_base import EntityBase
-from src.domain.entities.language import Language
-from src.domain.entities.card import Card
+from .card import Card
+from .language import Language
+from .entity_base import EntityBase
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 
@@ -16,7 +16,10 @@ class Deck(EntityBase):
     language: Mapped["Language"] = relationship()
     # one to many when Deck is the parent class
     cards: Mapped[List["Card"]] = relationship(cascade="all, delete-orphan")
+    account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))
 
-    def __init__(self, deck_name, language_id):
+
+    def __init__(self, deck_name, language_id, account_id):
         self.name = deck_name
         self.language_id = language_id
+        self.account_id = account_id

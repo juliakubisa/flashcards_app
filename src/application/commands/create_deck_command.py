@@ -8,7 +8,7 @@ class CreateDeckCommand:
     def __init__(self, repository: DeckRepository):
         self.repository = repository
 
-    def handle(self, request: CreateDeckRequest) -> CreateDeckResponse:
+    def handle(self, request: CreateDeckRequest, account_id: int) -> CreateDeckResponse:
         if request.name is None:
             raise FieldEmptyException("Deck name is required")
         if request.language_id is None:
@@ -16,9 +16,9 @@ class CreateDeckCommand:
 
         existing_deck = self.repository.get_by_name(request.name)
 
-        if existing_deck is not None:
+        if existing_deck is not None and existing_deck.account_id == account_id:
             raise DuplicateException("Deck with such name already exists")
         
-        new_deck = Deck(deck_name=request.name, language_id=request.language_id)
+        new_deck = Deck(request.name, request.language_id, account_id)
         new_deck_id = self.repository.add(new_deck)
         return CreateDeckResponse(id=new_deck_id)

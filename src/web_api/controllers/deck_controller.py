@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from src.application.model.input import CreateCardRequest, CreateDeckRequest
 from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse, QuizCardResponse
 from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand
@@ -11,50 +11,55 @@ from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDep
 router = APIRouter(prefix="/decks", tags=['Decks'], dependencies=[Depends(authenticate)])
 
 @router.get("")
-async def get_all_decks(deck_repository: DeckRepositoryDependency) -> list[DeckResponse]:
+async def get_all_decks(request: Request, deck_repository: DeckRepositoryDependency) -> list[DeckResponse]:
         query = GetAllDecksQuery(deck_repository)
-        decks = query.handle()
+        decks = query.handle(request.state.account_id)
         return decks
 
 
 @router.get("/{deck_id}")
-async def get_deck(deck_repository: DeckRepositoryDependency, deck_id: int) -> DeckResponse:
+async def get_deck(request: Request, deck_repository: DeckRepositoryDependency, deck_id: int) -> DeckResponse:
     query = GetDeckQuery(deck_repository)
-    deck = query.handle(deck_id)
+    deck = query.handle(deck_id, request.state.account_id)
     return deck
 
 
 @router.post("", status_code=201)
-async def create_deck(deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
+async def create_deck(request: Request, deck_repository: DeckRepositoryDependency, deck: CreateDeckRequest) -> CreateDeckResponse:
      command = CreateDeckCommand(deck_repository)
-     id_response = command.handle(deck)
+     id_response = command.handle(deck, request.state.account_id)
      return id_response
 
 
 @router.get("/{deck_id}/cards")
-async def get_cards_in_deck(card_repository: CardRepositoryDependency, deck_id: int) -> list[CardResponse]:
-    query = GetCardsInDeckQuery(card_repository)
-    cards = query.handle(deck_id)
+async def get_cards_in_deck(request: Request, 
+                            card_repository: CardRepositoryDependency, 
+                            deck_repository: DeckRepositoryDependency, 
+                            deck_id: int) -> list[CardResponse]:
+    query = GetCardsInDeckQuery(card_repository, deck_repository)
+    cards = query.handle(deck_id, request.state.account_id)
     return cards
 
 
 @router.delete("/{deck_id}", status_code=204)
-async def delete_deck(deck_repository: DeckRepositoryDependency, deck_id: int):
+async def delete_deck(request: Request, deck_repository: DeckRepositoryDependency, deck_id: int):
     command = DeleteDeckCommand(deck_repository)
-    command.handle(deck_id)
+    command.handle(deck_id, request.state.account_id)
 
 
 @router.post("/{deck_id}/cards", status_code=201)
-async def create_card(card_repository: CardRepositoryDependency, 
+async def create_card(request: Request, 
+                      card_repository: CardRepositoryDependency, 
                       deck_repository: DeckRepositoryDependency, deck_id: int, 
                       card: CreateCardRequest) -> CreateCardResponse:
     command = CreateCardCommand(card_repository, deck_repository)
-    id_response = command.handle(deck_id, card)
+    id_response = command.handle(deck_id, card, request.state.account_id)
     return id_response
 
 
 @router.post("/{deck_id}/file", status_code=201)
-async def create_cards_from_file(card_repository: CardRepositoryDependency, 
+async def create_cards_from_file(request: Request, 
+                                card_repository: CardRepositoryDependency, 
                                 deck_repository: DeckRepositoryDependency, 
                                 deck_id: int, 
                                 file: Annotated[UploadFile, File()],
@@ -75,14 +80,18 @@ async def create_cards_from_file(card_repository: CardRepositoryDependency,
         raise HTTPException(400, "Detected a non-unicode character")
     
     command = CreateCardsFromFileCommand(card_repository, deck_repository)
-    ids_response = command.handle(deck_id, file_content, delimiter)
+    ids_response = command.handle(deck_id, file_content, delimiter, request.state.account_id)
     
     return ids_response
 
 @router.get("/{deck_id}/quiz/cards")
-async def get_quiz_cards(card_repository: CardRepositoryDependency, deck_id: int, number_of_cards: int) -> list[QuizCardResponse]:
-    query = GetQuizCardsQuery(card_repository)
-    cards = query.handle(deck_id, number_of_cards)
+async def get_quiz_cards(request: Request, 
+                         card_repository: CardRepositoryDependency, 
+                         deck_repository: DeckRepositoryDependency,
+                         deck_id: int, 
+                         number_of_cards: int) -> list[QuizCardResponse]:
+    query = GetQuizCardsQuery(card_repository, deck_repository)
+    cards = query.handle(deck_id, number_of_cards, request.state.account_id)
     return cards
 
 

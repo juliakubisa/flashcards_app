@@ -1,15 +1,21 @@
 from src.application.algorithm import Algorithm
 from src.application.model.output import QuizCardResponse
-from src.infrastructure.database.repositories import CardRepository
-from src.domain.exceptions.too_few_cards_exception import TooFewCardsException
+from src.infrastructure.database.repositories import CardRepository, DeckRepository
+from src.domain.exceptions import TooFewCardsException, NotExistsException
 
 
 class GetQuizCardsQuery:
-    def __init__(self, repository: CardRepository):
-        self.repository = repository
+    def __init__(self, card_repository: CardRepository, deck_repository: DeckRepository):
+        self.card_repository = card_repository
+        self.deck_repository = deck_repository
 
-    def handle(self, deck_id: int, num_cards: int) -> list[QuizCardResponse]:
-        all_cards = self.repository.get_all_in_deck(deck_id)
+    def handle(self, deck_id: int, num_cards: int, account_id: int) -> list[QuizCardResponse]:
+        deck = self.deck_repository.get_by_id(deck_id)
+
+        if deck is None or deck.account_id != account_id:
+            raise NotExistsException("Deck not found")
+
+        all_cards = self.card_repository.get_all_in_deck(deck_id)
 
         if len(all_cards) < 10:
             raise TooFewCardsException('Too few cards to quiz')

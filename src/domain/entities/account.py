@@ -1,5 +1,7 @@
-from sqlalchemy.orm import Mapped, mapped_column
-from src.domain.entities.entity_base import EntityBase
+from typing import List
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from .deck import Deck
+from .entity_base import EntityBase
 
 
 class Account(EntityBase):
@@ -11,6 +13,7 @@ class Account(EntityBase):
     email: Mapped[str] = mapped_column()
     password: Mapped[str] = mapped_column()
     refresh_token: Mapped[str] = mapped_column(nullable=True)
+    decks: Mapped[List["Deck"]] = relationship()
 
     def __init__(self, name, email, password):
         self.name = name

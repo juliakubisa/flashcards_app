@@ -5,8 +5,8 @@ class DeckRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_all(self) -> list[Deck]:
-        return self.db.query(Deck).all()
+    def get_all_for_account(self, account_id: int) -> list[Deck]:
+        return self.db.query(Deck).filter(Deck.account_id == account_id).all()
     
     def get_by_id(self, id: int) -> Deck | None:
         return self.db.query(Deck).filter(Deck.id == id).one_or_none()

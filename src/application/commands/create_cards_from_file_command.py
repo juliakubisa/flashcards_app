@@ -8,7 +8,7 @@ class CreateCardsFromFileCommand:
         self.card_repository = card_repository
         self.deck_repository = deck_repository
 
-    def handle(self, deck_id: int, file_content: str, delimiter: str = ',') -> list[CreateCardResponse]:
+    def handle(self, deck_id: int, file_content: str, delimiter: str, account_id: int) -> list[CreateCardResponse]:
         if deck_id is None:
             raise FieldEmptyException("Deck ID is required")
         
@@ -17,7 +17,7 @@ class CreateCardsFromFileCommand:
         
         existing_deck = self.deck_repository.get_by_id(deck_id)
 
-        if existing_deck is None: 
+        if existing_deck is None or existing_deck.account_id != account_id: 
             raise NotExistsException("Deck not found")
         
         lines = file_content.strip().splitlines()

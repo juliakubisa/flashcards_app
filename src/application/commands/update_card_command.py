@@ -5,11 +5,12 @@ from src.infrastructure.database.repositories import CardRepository, DeckReposit
 
 
 class UpdateCardCommand:
-    def __init__(self, repository: CardRepository):
-        self.repository = repository
+    def __init__(self, card_repository: CardRepository, deck_repository: DeckRepository):
+        self.card_repository = card_repository
+        self.deck_repository = deck_repository
         self.max_word_len = 100
 
-    def handle(self, request: CreateCardRequest, card_id: int) -> None:
+    def handle(self, request: CreateCardRequest, card_id: int, account_id: int) -> None:
 
         if len(request.foreign_word) == 0:
             raise FieldEmptyException("Foreign word is required")
@@ -23,11 +24,16 @@ class UpdateCardCommand:
         if len(request.translated_word) > self.max_word_len:
             raise FieldTooLongException("Translated word too long")
         
-        existing_card = self.repository.get_by_id(card_id)
+        existing_card = self.card_repository.get_by_id(card_id)
 
         if existing_card is None: 
-            raise NotExistsException("Such card doesn't exist")
+            raise NotExistsException("Card not found")
+        
+        deck = self.deck_repository.get_by_id(existing_card.deck_id)
+
+        if deck.account_id != account_id:
+            raise NotExistsException("Card not found")
 
         existing_card.foreign_word = request.foreign_word
         existing_card.translated_word = request.translated_word
-        self.repository.save_changes(existing_card)
+        self.card_repository.save_changes(existing_card)

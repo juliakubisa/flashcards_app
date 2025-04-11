@@ -20,6 +20,6 @@ def authenticate(request: Request,
     if account is None:
         raise HTTPException(status_code=401, detail='No such account')
     
-    request.state.account = account
+    request.state.account_id = account.id
 
 

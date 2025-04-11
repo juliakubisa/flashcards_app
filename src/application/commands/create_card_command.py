@@ -10,7 +10,7 @@ class CreateCardCommand:
         self.deck_repository = deck_repository
         self.max_word_len = 100
 
-    def handle(self, deck_id: int, request: CreateCardRequest) -> CreateCardResponse:
+    def handle(self, deck_id: int, request: CreateCardRequest, account_id: int) -> CreateCardResponse:
 
         if len(request.foreign_word) == 0:
             raise FieldEmptyException("Foreign word is required")
@@ -26,7 +26,7 @@ class CreateCardCommand:
         
         existing_deck = self.deck_repository.get_by_id(deck_id)
 
-        if existing_deck is None: 
+        if existing_deck is None or existing_deck.account_id != account_id: 
             raise NotExistsException("Deck not found")
         
         existing_card = self.card_repository.get_in_deck(deck_id, request.foreign_word, request.translated_word)
