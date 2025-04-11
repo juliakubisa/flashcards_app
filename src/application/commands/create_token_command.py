@@ -10,7 +10,7 @@ class CreateTokenCommand:
         self.repository = repository
         self.token_service = token_service
 
-    def handle(self, request: CreateTokenRequest) -> TokenResponse:
+    def handle(self, request: CreateTokenRequest) -> tuple[TokenResponse, str]:
         if request.email is None:
             raise FieldEmptyException("Email is required")
         if request.password is None:
@@ -25,4 +25,4 @@ class CreateTokenCommand:
         account.refresh_token = self.token_service.generate_refresh_token(account.email)
         self.repository.save_changes(account)
 
-        return TokenResponse(access_token=access_token, refresh_token=account.refresh_token, email=account.email, name=account.name)
+        return (TokenResponse(access_token=access_token, email=account.email, name=account.name), account.refresh_token)

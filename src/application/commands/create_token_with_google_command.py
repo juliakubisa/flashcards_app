@@ -15,7 +15,7 @@ class CreateTokenWithGoogleCommand:
         self.token_service = token_service
         self.google_auth_service = google_auth_service
 
-    def handle(self, request: CreateTokenWithGoogleRequest) -> TokenResponse:
+    def handle(self, request: CreateTokenWithGoogleRequest) -> tuple[TokenResponse, str]:
         if request.id_token is None:
             raise FieldEmptyException("Google idToken is required")
         
@@ -36,7 +36,7 @@ class CreateTokenWithGoogleCommand:
         account.refresh_token = refresh_token
         self.repository.save_changes(account)
 
-        return TokenResponse(access_token=access_token, refresh_token=account.refresh_token, email=account.email, name=account.name)
+        return (TokenResponse(access_token=access_token, email=account.email, name=account.name), account.refresh_token)
     
     def __generate_random_password(self) -> str:
         alphabet = string.ascii_letters + string.digits
