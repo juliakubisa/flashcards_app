@@ -22,7 +22,7 @@ class CreateTokenWithGoogleCommand:
         decoded_token = self.google_auth_service.decode_token(request.id_token)
 
         user_google_id = decoded_token['sub']
-        user_email = decoded_token['name']
+        user_email = decoded_token['email']
         account = self.repository.get_by_google_id(user_google_id)
 
         if not account:
