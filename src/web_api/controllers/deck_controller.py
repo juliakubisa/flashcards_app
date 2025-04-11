@@ -64,7 +64,7 @@ async def create_cards_from_file(card_repository: CardRepositoryDependency,
         raise HTTPException(400, "File is required")
 
     if file.size > 10 * 1024 * 1024: # 10 MB
-        raise HTTPException(413, "File too large")
+        raise HTTPException(413, "File too large (max size is 10 MB)")
 
     if not file.filename.endswith(".txt") and not file.filename.endswith(".csv"):
         raise HTTPException(400, "Unsupported file extension")
@@ -72,7 +72,7 @@ async def create_cards_from_file(card_repository: CardRepositoryDependency,
     try:   
         file_content = (await file.read()).decode("utf-8")
     except UnicodeDecodeError:
-        raise HTTPException(400, "Detected a non-unicode character")
+        raise HTTPException(400, "File contains an illegal non-unicode character")
     
     command = CreateCardsFromFileCommand(card_repository, deck_repository)
     ids_response = command.handle(deck_id, file_content, delimiter)

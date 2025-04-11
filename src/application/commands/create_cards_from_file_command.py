@@ -22,22 +22,31 @@ class CreateCardsFromFileCommand:
         
         lines = file_content.strip().splitlines()
 
+        existing_cards = self.card_repository.get_all_in_deck(deck_id)
         cards_to_add: list[Card] = []
 
-        for line in lines:
-            if delimiter in line:
-                try:
-                    word_pair = line.strip().split(delimiter)
-                    foreign_word = word_pair[0].replace('"', '').strip()
-                    translated_word = word_pair[1].replace('"', '').strip()
-                except:
-                    raise WrongFileFormatException('Wrong file format')
-                
-                if any(c.foreign_word == foreign_word and c.translated_word == translated_word for c in cards_to_add):
-                    continue
+        for index, line in enumerate(lines):
+            # Skip lines that do not include a word pair
+            if delimiter not in line:
+                continue
 
-                card = Card(foreign_word=foreign_word, translated_word=translated_word, deck_id=deck_id)
-                cards_to_add.append(card)
+            try:
+                word_pair = line.strip().split(delimiter)
+                foreign_word = word_pair[0].replace('"', '').strip()
+                translated_word = word_pair[1].replace('"', '').strip()
+            except:
+                raise WrongFileFormatException(f"Invalid formatting at line: {index + 1}. Each word pair should be put in a new line and separated by: '{delimiter}'. Translation should follow the foreign word.")
+            
+            # Skip word pairs that were already read from the file
+            if any(c.foreign_word == foreign_word and c.translated_word == translated_word for c in cards_to_add):
+                continue
+
+            # Skip word pairs that are already in the database
+            if any(c.foreign_word == foreign_word and c.translated_word == translated_word for c in existing_cards):
+                continue
+
+            card = Card(foreign_word=foreign_word, translated_word=translated_word, deck_id=deck_id)
+            cards_to_add.append(card)
 
         ids = self.card_repository.add_many(cards_to_add)
         return [CreateCardResponse(id=id) for id in ids]
