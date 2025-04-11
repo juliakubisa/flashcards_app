@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from src.domain.exceptions import DuplicateException, NotExistsException, FieldEmptyException, FieldTooLongException, TokenInvalidException, TokenExpiredException, WrongFileFormatException
+from src.domain.exceptions import DuplicateException, NotExistsException, FieldEmptyException, FieldTooLongException, TokenInvalidException, TokenExpiredException, WrongFileFormatException, TooFewCardsException
 
 
 async def duplicate_exception_handler(request, exc: DuplicateException):
@@ -22,3 +22,6 @@ async def token_expired_exception_handler(request, exc: TokenExpiredException):
 
 async def wrong_file_format_exception_handler(request, exc: WrongFileFormatException):
     raise HTTPException(status_code=400, detail=str(exc))
+
+async def too_few_cards_exception_handler(request, exc: TooFewCardsException):
+    raise HTTPException(status_code=409, detail=str(exc))
