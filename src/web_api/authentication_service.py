@@ -16,7 +16,8 @@ def authenticate(request: Request,
     token_payload = token_service.decode_token(token)
 
     account = account_repository.get_by_email(token_payload['email'])
-
+    print(token_payload)
+    print(account)
     if account is None:
         raise HTTPException(status_code=401, detail='No such account')
     
