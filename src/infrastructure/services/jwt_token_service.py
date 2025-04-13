@@ -4,13 +4,15 @@ from src.domain.exceptions import TokenExpiredException, TokenInvalidException
 
 
 class JWTTokenService():
-    def __init__(self, jwt_secret: str):
+    def __init__(self, jwt_secret: str, access_token_age_seconds: int, refresh_token_age_seconds: int):
         self.jwt_secret = jwt_secret
+        self.access_token_age_seconds = access_token_age_seconds
+        self.refresh_token_age_seconds = refresh_token_age_seconds
 
     def generate_access_token(self, email: str) -> str:
         token_payload = {
             'email': email,
-            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=30),
+            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=self.access_token_age_seconds),
             'token_type': 'access'
         }
         
@@ -21,7 +23,7 @@ class JWTTokenService():
     def generate_refresh_token(self, email: str) -> str:
         token_payload = {
             'email': email,
-            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30),
+            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=self.refresh_token_age_seconds),
             'token_type': 'refresh'
         }
         

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Cookie, Request, Response
+from fastapi import APIRouter, Request, Response
 from src.application.commands import CreateAccountCommand, CreateTokenCommand, RefreshTokenCommand, CreateTokenWithGoogleCommand
 from src.application.model.input import CreateTokenRequest, CreateAccountRequest, CreateTokenWithGoogleRequest
 from src.application.model.output import TokenResponse
 from src.web_api.dependencies import AccountRepositoryDependency, GoogleAuthServiceDependency, JWTTokenServiceDependency
+from src.web_api.settings import Settings
 
 
 router = APIRouter(prefix="/accounts", tags=['Accounts'])
@@ -53,5 +54,11 @@ async def refresh_token(request: Request,
     return token_response
 
 def set_refresh_token_cookie(refresh_token: str, response: Response):
-    response.set_cookie(key='refresh_token', value=refresh_token, httponly=True, secure=True, path='/accounts/token/refresh', samesite='none')
+    response.set_cookie(key='refresh_token', 
+                        value=refresh_token, 
+                        httponly=True, 
+                        secure=True, 
+                        path='/accounts/token/refresh', 
+                        samesite='none',
+                        max_age=Settings.load().refresh_token_age_seconds)
 
