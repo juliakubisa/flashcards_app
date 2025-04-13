@@ -10,7 +10,7 @@ class JWTTokenService():
     def generate_access_token(self, email: str) -> str:
         token_payload = {
             'email': email,
-            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=10),
+            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=30),
             'token_type': 'access'
         }
         
