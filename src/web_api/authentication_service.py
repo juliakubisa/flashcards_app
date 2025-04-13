@@ -10,8 +10,9 @@ def authenticate(request: Request,
     print(auth_header)
     if auth_header is None:
         raise HTTPException(status_code=401, detail='Token is required')
-    print(token)
+    
     token = auth_header.credentials
+    print(token)
 
     token_payload = token_service.decode_token(token)
 
