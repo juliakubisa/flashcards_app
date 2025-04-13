@@ -41,8 +41,8 @@ AccountRepositoryDependency = Annotated[AccountRepository, Depends(create_accoun
 
 # JWTTokenService
 def create_jwt_token_service() -> JWTTokenService:
-    jwt_secret = Settings.load().jwt_secret
-    return JWTTokenService(jwt_secret)
+    settings = Settings.load()
+    return JWTTokenService(settings.jwt_secret, settings.access_token_age_seconds, settings.refresh_token_age_seconds)
 
 JWTTokenServiceDependency = Annotated[JWTTokenService, Depends(create_jwt_token_service)]
 
