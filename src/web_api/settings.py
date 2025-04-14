@@ -1,3 +1,4 @@
+from typing import Union
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
@@ -5,6 +6,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     database_connection_string: str
     google_client_id: str
+    domain: str | None = None
 
     # JWT settings
     jwt_secret: str
