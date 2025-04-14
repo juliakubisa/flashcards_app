@@ -24,7 +24,9 @@ app.add_middleware(
         'http://localhost:5173',
         'http://127.0.0.1:5173',
         'https://flashcards-frontend-bice.vercel.app',
-        'https://flashcards-frontend-ake4.onrender.com'
+        'https://flashcards-frontend-ake4.onrender.com',
+        'https://www.flashcardsapp.cloud'
+
     ],
     allow_credentials=True,
     allow_methods=["*"],

@@ -58,7 +58,8 @@ def set_refresh_token_cookie(refresh_token: str, response: Response):
                         value=refresh_token, 
                         httponly=True, 
                         secure=True, 
-                        path='/accounts/token/refresh', 
+                        path='/accounts/token/refresh',
+                        domain='.flashcardsapp.cloud',
                         samesite='none',
                         max_age=Settings.load().refresh_token_age_seconds)
 
