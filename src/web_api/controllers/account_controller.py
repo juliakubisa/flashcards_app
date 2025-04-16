@@ -44,9 +44,8 @@ async def refresh_token(request: Request,
                         token_service: JWTTokenServiceDependency,
                         response: Response) -> TokenResponse:
     command = RefreshTokenCommand(account_repository, token_service)
+    
     refresh_token = request.cookies.get('refresh_token')
-    print(refresh_token)
-    print(request.cookies)
     token_response, refresh_token = command.handle(refresh_token)
 
     set_refresh_token_cookie(refresh_token, response)

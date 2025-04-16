@@ -7,18 +7,15 @@ def authenticate(request: Request,
                  token_service: JWTTokenServiceDependency, 
                  account_repository: AccountRepositoryDependency, 
                  auth_header: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False))):
-    print(auth_header)
     if auth_header is None:
         raise HTTPException(status_code=401, detail='Token is required')
     
     token = auth_header.credentials
-    print(token)
 
     token_payload = token_service.decode_token(token)
 
     account = account_repository.get_by_email(token_payload['email'])
-    print(token_payload)
-    print(account)
+
     if account is None:
         raise HTTPException(status_code=401, detail='No such account')
     
