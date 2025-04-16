@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     # JWT settings
     jwt_secret: str
-    access_token_age_seconds: int = 10
+    access_token_age_seconds: int = 10 * 60 # 10 minutes by default
     refresh_token_age_seconds: int = 60 * 60 * 24 * 30 # 30 days by default
 
     @lru_cache
