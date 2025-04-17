@@ -23,3 +23,7 @@ class DeckRepository:
     def delete(self, deck: Deck) -> None:
         self.db.delete(deck)
         self.db.commit()
+
+    def save_changes(self, deck: Deck) -> None:
+        self.db.commit()
+        self.db.refresh(deck) 

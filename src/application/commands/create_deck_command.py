@@ -14,9 +14,9 @@ class CreateDeckCommand:
         if request.language_id is None:
             raise FieldEmptyException("Deck language is required")
 
-        existing_deck = self.repository.get_by_name(request.name)
+        duplicate_deck = self.repository.get_by_name(request.name)
 
-        if existing_deck is not None and existing_deck.account_id == account_id:
+        if duplicate_deck is not None and duplicate_deck.account_id == account_id:
             raise DuplicateException("Deck with such name already exists")
         
         new_deck = Deck(request.name, request.language_id, account_id)

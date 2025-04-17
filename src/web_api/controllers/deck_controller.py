@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from src.application.model.input import CreateCardRequest, CreateDeckRequest
 from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse, QuizCardResponse
-from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand
+from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand, UpdateDeckCommand
 from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery, GetQuizCardsQuery
 from src.web_api.authentication_service import authenticate
 from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
@@ -45,6 +45,13 @@ async def get_cards_in_deck(request: Request,
 async def delete_deck(request: Request, deck_repository: DeckRepositoryDependency, deck_id: int):
     command = DeleteDeckCommand(deck_repository)
     command.handle(deck_id, request.state.account_id)
+
+@router.put("/{deck_id}", status_code=204)
+async def update_deck(request: Request, 
+                      deck_repository: DeckRepositoryDependency,
+                      deck: CreateDeckRequest, deck_id: int):
+    command = UpdateDeckCommand(deck_repository)
+    command.handle(deck, deck_id, request.state.account_id)
 
 
 @router.post("/{deck_id}/cards", status_code=201)

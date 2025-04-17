@@ -8,3 +8,4 @@ from .refresh_token_command import RefreshTokenCommand
 from .create_token_with_google_command import CreateTokenWithGoogleCommand
 from .update_card_command import UpdateCardCommand
 from .create_cards_from_file_command import CreateCardsFromFileCommand
+from .update_deck_command import UpdateDeckCommand
