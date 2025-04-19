@@ -13,6 +13,7 @@ class Card(EntityBase):
     translated_word: Mapped[str] = mapped_column()
     date_added: Mapped[date] = mapped_column(insert_default=func.now())
     deck_id: Mapped[int] = mapped_column(ForeignKey("deck.id"))
+    example_sentence: Mapped[str] = mapped_column(default=None, nullable=True)
 
     # Algorithm information
     easiness_factor: Mapped[float] = mapped_column(default=1)

@@ -29,12 +29,16 @@ class CreateCardCommand:
         if existing_deck is None or existing_deck.account_id != account_id: 
             raise NotExistsException("Deck not found")
         
-        existing_card = self.card_repository.get_in_deck(deck_id, request.foreign_word, request.translated_word)
+        existing_card = self.card_repository.get_in_deck(deck_id, request.foreign_word, 
+                                                         request.translated_word)
 
         if existing_card is not None:
             raise DuplicateException("Card already exists")
         
-        new_card = Card(foreign_word=request.foreign_word, translated_word=request.translated_word, deck_id = deck_id)
+        new_card = Card(foreign_word=request.foreign_word, 
+                        translated_word=request.translated_word, 
+                        deck_id = deck_id,
+                        example_sentence = request.example_sentence)
         new_card_id = self.card_repository.add(new_card)
         return CreateCardResponse(id=new_card_id)
     

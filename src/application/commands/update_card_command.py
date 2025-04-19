@@ -36,4 +36,5 @@ class UpdateCardCommand:
 
         existing_card.foreign_word = request.foreign_word
         existing_card.translated_word = request.translated_word
+        existing_card.example_sentence = request.example_sentence
         self.card_repository.save_changes(existing_card)
