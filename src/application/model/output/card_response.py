@@ -7,7 +7,7 @@ class CardResponse(BaseModel):
     foreign_word: str
     translated_word: str
     date_added: date
-    example_sentence: str 
+    example_sentence: str | None
 
     def from_card(card: Card):
         return CardResponse(id=card.id, 
