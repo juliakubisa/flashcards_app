@@ -15,7 +15,7 @@ class GetQuizCardsQuery:
         if deck is None or deck.account_id != account_id:
             raise NotExistsException("Deck not found")
 
-        all_cards = self.card_repository.get_all_in_deck(deck_id)
+        all_cards = self.card_repository.get_several_in_deck(deck_id)
 
         if len(all_cards) < 10:
             raise TooFewCardsException('Too few cards to quiz')

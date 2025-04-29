@@ -5,3 +5,4 @@ from .deck_response import DeckResponse
 from .language_response import LanguageResponse
 from .quiz_card_response import QuizCardResponse
 from .token_response import TokenResponse
+from .cards_paginated_response import CardsPaginatedResponse

@@ -22,7 +22,7 @@ class CreateCardsFromFileCommand:
         
         lines = file_content.strip().splitlines()
 
-        existing_cards = self.card_repository.get_all_in_deck(deck_id)
+        existing_cards = self.card_repository.get_several_in_deck(deck_id)
         cards_to_add: list[Card] = []
 
         for index, line in enumerate(lines):

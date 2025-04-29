@@ -1,7 +1,8 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from pydantic import conint
 from src.application.model.input import CreateCardRequest, CreateDeckRequest
-from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardResponse, QuizCardResponse
+from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardsPaginatedResponse, QuizCardResponse
 from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand, UpdateDeckCommand
 from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery, GetQuizCardsQuery
 from src.web_api.authentication_service import authenticate
@@ -35,9 +36,12 @@ async def create_deck(request: Request, deck_repository: DeckRepositoryDependenc
 async def get_cards_in_deck(request: Request, 
                             card_repository: CardRepositoryDependency, 
                             deck_repository: DeckRepositoryDependency, 
-                            deck_id: int) -> list[CardResponse]:
+                            deck_id: int,
+                            page: conint(ge=0) = 0,
+                            page_size: conint(ge=0) = 10,
+                            search_text: str | None = None) -> CardsPaginatedResponse:
     query = GetCardsInDeckQuery(card_repository, deck_repository)
-    cards = query.handle(deck_id, request.state.account_id)
+    cards = query.handle(deck_id, request.state.account_id, page, page_size, search_text)
     return cards
 
 
