@@ -23,6 +23,7 @@ class CreateTokenWithGoogleCommand:
 
         user_google_id = decoded_token['sub']
         user_email = decoded_token['email']
+        user_image_url = decoded_token['picture']
         account = self.repository.get_by_google_id(user_google_id)
 
         if not account:
@@ -36,7 +37,7 @@ class CreateTokenWithGoogleCommand:
         account.refresh_token = refresh_token
         self.repository.save_changes(account)
 
-        return (TokenResponse(access_token=access_token, email=account.email, name=account.name), account.refresh_token)
+        return (TokenResponse(access_token=access_token, email=account.email, name=account.name, image_url=user_image_url), account.refresh_token)
     
     def __generate_random_password(self) -> str:
         alphabet = string.ascii_letters + string.digits
