@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 from src.infrastructure.database.repositories import CardRepository, DeckRepository, LanguageRepository
 from src.infrastructure.database.repositories.account_repository import AccountRepository
-from src.infrastructure.services import JWTTokenService, GoogleAuthService
+from src.infrastructure.services import JWTTokenService, GoogleAuthService, ImageStorageService
 from src.web_api.settings import Settings
 
 # DatabaseSession
@@ -52,3 +52,10 @@ def create_google_auth_service() -> GoogleAuthService:
     return GoogleAuthService(google_client_id)
 
 GoogleAuthServiceDependency = Annotated[GoogleAuthService, Depends(create_google_auth_service)]
+
+# ImageStorageService
+def create_image_storage_service() -> ImageStorageService:
+    settings = Settings.load()
+    return ImageStorageService(settings.aws_access_key_id, settings.aws_secret_access_key, settings.access_token_age_seconds)
+
+ImageStorageServiceDependency = Annotated[ImageStorageService, Depends(create_image_storage_service)]

@@ -1,19 +1,19 @@
 import secrets
 import string
-import bcrypt
 from src.application.model.input import CreateTokenWithGoogleRequest
 from src.application.model.output import TokenResponse
 from src.domain.entities import Account
 from src.domain.exceptions import FieldEmptyException
 from src.infrastructure.database.repositories import AccountRepository
-from src.infrastructure.services import JWTTokenService, GoogleAuthService
+from src.infrastructure.services import JWTTokenService, GoogleAuthService, ImageStorageService
 
 
 class CreateTokenWithGoogleCommand:
-    def __init__(self, repository: AccountRepository, token_service: JWTTokenService, google_auth_service: GoogleAuthService):
+    def __init__(self, repository: AccountRepository, token_service: JWTTokenService, google_auth_service: GoogleAuthService, image_storage_service: ImageStorageService):
         self.repository = repository
         self.token_service = token_service
         self.google_auth_service = google_auth_service
+        self.image_storage_service = image_storage_service
 
     def handle(self, request: CreateTokenWithGoogleRequest) -> tuple[TokenResponse, str]:
         if request.id_token is None:
@@ -23,7 +23,7 @@ class CreateTokenWithGoogleCommand:
 
         user_google_id = decoded_token['sub']
         user_email = decoded_token['email']
-        user_image_url = decoded_token['picture']
+
         account = self.repository.get_by_google_id(user_google_id)
 
         if not account:
@@ -36,6 +36,11 @@ class CreateTokenWithGoogleCommand:
 
         account.refresh_token = refresh_token
         self.repository.save_changes(account)
+
+        user_image_url = self.image_storage_service.get_account_image_url(account.id)
+
+        if user_image_url is None:
+            user_image_url = decoded_token['picture']
 
         return (TokenResponse(access_token=access_token, email=account.email, name=account.name, image_url=user_image_url), account.refresh_token)
     

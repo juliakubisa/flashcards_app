@@ -1,2 +1,3 @@
 from .jwt_token_service import JWTTokenService
 from .google_auth_service import GoogleAuthService
+from .image_storage_service import ImageStorageService
