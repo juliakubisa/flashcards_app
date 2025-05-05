@@ -19,6 +19,9 @@ class CardRepository:
     def get_specific_in_deck(self, deck_id: int, offset: int, limit: int, search_text: str) -> list[Card]:
         return self.db.query(Card).filter(and_(Card.deck_id == deck_id, or_(Card.foreign_word.ilike(f"%{search_text}%"), Card.translated_word.ilike(f"%{search_text}%")))).offset(offset).limit(limit).all()
     
+    def get_all_in_deck(self, deck_id: int) -> list[Card]:
+        return self.db.query(Card).filter(Card.deck_id == deck_id).all()
+
     def get_by_id(self, id: int) -> Card | None:
         return self.db.query(Card).filter(Card.id == id).one_or_none()
     
