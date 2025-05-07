@@ -27,6 +27,7 @@ class Algorithm:
         wrong_answers = get_close_matches(card.foreign_word, candidates, 3)
 
         while len(wrong_answers) < 3:
-            sample = random.sample(candidates, 3-len(wrong_answers))
+            new_candidates = [word for word in candidates if candidates not in wrong_answers]
+            sample = random.sample(new_candidates, 3-len(wrong_answers))
             wrong_answers.extend(sample)
         return wrong_answers
