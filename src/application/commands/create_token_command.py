@@ -20,7 +20,7 @@ class CreateTokenCommand:
         account = self.repository.get_by_email(request.email)
 
         if not account or not bcrypt.checkpw(request.password.encode('utf-8'), account.password.encode('utf-8')):
-            raise NotExistsException("Account with such email or password does not exist")
+            raise NotExistsException("Account does not exist")
         
         access_token = self.token_service.generate_access_token(account.email)
         account.refresh_token = self.token_service.generate_refresh_token(account.email)
