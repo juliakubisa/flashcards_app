@@ -31,13 +31,13 @@ class CardRepository:
     
     def get_specific_in_deck(self, deck_id: int, offset: int, limit: int, search_text: str, sort_by: SortCardsBy, sort_direction: SortDirection) -> list[Card]:
         return (self.db.query(Card)
+                .order_by(self.__get_sort_expression(sort_by, sort_direction))
                 .filter(
                     and_(
                         Card.deck_id == deck_id, 
                         or_(Card.foreign_word.ilike(f"%{search_text}%"), Card.translated_word.ilike(f"%{search_text}%"))
                     )
                 )
-                .order_by(self.__get_sort_expression(sort_by, sort_direction))
                 .offset(offset)
                 .limit(limit)
                 .all())
