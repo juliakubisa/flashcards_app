@@ -12,22 +12,51 @@ class CardRepository:
         return self.db.query(Card).filter(Card.deck_id == deck_id).count()
     
     def count_specific_in_deck(self, deck_id: int, search_text: str) -> int:
-        return self.db.query(Card).filter(and_(Card.deck_id == deck_id, or_(Card.foreign_word.ilike(f"%{search_text}%"), Card.translated_word.ilike(f"%{search_text}%")))).count()
+        return (self.db.query(Card)
+                .filter(
+                    and_(
+                        Card.deck_id == deck_id, 
+                        or_(Card.foreign_word.ilike(f"%{search_text}%"), Card.translated_word.ilike(f"%{search_text}%"))
+                    )
+                )
+                .count())
 
     def get_several_in_deck(self, deck_id: int, offset: int, limit: int, sort_by: SortCardsBy, sort_direction: SortDirection) -> list[Card]:
-        return self.db.query(Card).filter(Card.deck_id == deck_id).order_by(self.__get_sort_expression(sort_by, sort_direction)).offset(offset).limit(limit).all()
+        return (self.db.query(Card)
+                .filter(Card.deck_id == deck_id)
+                .order_by(self.__get_sort_expression(sort_by, sort_direction))
+                .offset(offset)
+                .limit(limit)
+                .all())
     
     def get_specific_in_deck(self, deck_id: int, offset: int, limit: int, search_text: str, sort_by: SortCardsBy, sort_direction: SortDirection) -> list[Card]:
-        return self.db.query(Card).filter(and_(Card.deck_id == deck_id, or_(Card.foreign_word.ilike(f"%{search_text}%"), Card.translated_word.ilike(f"%{search_text}%")))).order_by(self.__get_sort_expression(sort_by, sort_direction)).offset(offset).limit(limit).all()
+        return (self.db.query(Card)
+                .filter(
+                    and_(
+                        Card.deck_id == deck_id, 
+                        or_(Card.foreign_word.ilike(f"%{search_text}%"), Card.translated_word.ilike(f"%{search_text}%"))
+                    )
+                )
+                .order_by(self.__get_sort_expression(sort_by, sort_direction))
+                .offset(offset)
+                .limit(limit)
+                .all())
     
     def get_all_in_deck(self, deck_id: int) -> list[Card]:
-        return self.db.query(Card).filter(Card.deck_id == deck_id).order_by(Card.date_added.desc()).all()
+        return (self.db.query(Card)
+                .filter(Card.deck_id == deck_id)
+                .order_by(Card.date_added.desc())
+                .all())
 
     def get_by_id(self, id: int) -> Card | None:
-        return self.db.query(Card).filter(Card.id == id).one_or_none()
+        return (self.db.query(Card)
+                .filter(Card.id == id)
+                .one_or_none())
     
     def get_in_deck(self, id: int, foreign_word: str, translated_word: str) -> Card | None:
-        return self.db.query(Card).filter(Card.deck_id==id, Card.foreign_word==foreign_word, Card.translated_word==translated_word).one_or_none()
+        return (self.db.query(Card)
+                .filter(Card.deck_id==id, Card.foreign_word==foreign_word, Card.translated_word==translated_word)
+                .one_or_none())
     
     def add(self, card: Card) -> int:
         self.db.add(card)

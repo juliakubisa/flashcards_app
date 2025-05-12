@@ -8,13 +8,22 @@ class DeckRepository:
         self.db = db
 
     def get_all_for_account(self, account_id: int, sort_by: SortDecksBy, sort_direction: SortDirection) -> list[Deck]:
-        return self.db.query(Deck).join(Card, Deck.id == Card.deck_id).group_by(Deck.id).filter(Deck.account_id == account_id).order_by(self.__get_sort_expression(sort_by, sort_direction)).all()
+        return (self.db.query(Deck)
+                .join(Card, Deck.id == Card.deck_id)
+                .group_by(Deck.id)
+                .filter(Deck.account_id == account_id)
+                .order_by(self.__get_sort_expression(sort_by, sort_direction))
+                .all())
     
     def get_by_id(self, id: int) -> Deck | None:
-        return self.db.query(Deck).filter(Deck.id == id).one_or_none()
+        return (self.db.query(Deck)
+                .filter(Deck.id == id)
+                .one_or_none())
     
     def get_by_name(self, name: str) -> Deck | None:
-        return self.db.query(Deck).filter(Deck.name == name).one_or_none()
+        return (self.db.query(Deck)
+                .filter(Deck.name == name)
+                .one_or_none())
     
     def add(self, deck: Deck) -> int:
         self.db.add(deck)

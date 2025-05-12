@@ -7,13 +7,19 @@ class AccountRepository:
         self.db = db
 
     def get_by_email(self, email: str) -> Account | None:
-        return self.db.query(Account).filter(Account.email == email).one_or_none()
+        return (self.db.query(Account)
+                .filter(Account.email == email)
+                .one_or_none())
     
     def get_by_refresh_token_and_email(self, refresh_token: str, email: str) -> Account | None:
-        return self.db.query(Account).filter(Account.email == email and Account.refresh_token == refresh_token).one_or_none()
+        return (self.db.query(Account)
+                .filter(Account.email == email and Account.refresh_token == refresh_token)
+                .one_or_none())
     
     def get_by_google_id(self, google_id: str) -> Account | None:
-        return self.db.query(Account).filter(Account.google_id == google_id).one_or_none()
+        return (self.db.query(Account)
+                .filter(Account.google_id == google_id)
+                .one_or_none())
     
     def add(self, account: Account) -> None:
         self.db.add(account)
