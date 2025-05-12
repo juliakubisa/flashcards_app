@@ -5,6 +5,7 @@ from src.application.model.input import CreateCardRequest, CreateDeckRequest
 from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardsPaginatedResponse, QuizCardResponse
 from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand, UpdateDeckCommand
 from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery, GetQuizCardsQuery
+from src.domain.enums import SortCardsBy, SortDirection, SortDecksBy
 from src.web_api.authentication_service import authenticate
 from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
 
@@ -12,9 +13,12 @@ from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDep
 router = APIRouter(prefix="/decks", tags=['Decks'], dependencies=[Depends(authenticate)])
 
 @router.get("")
-async def get_all_decks(request: Request, deck_repository: DeckRepositoryDependency) -> list[DeckResponse]:
+async def get_all_decks(request: Request, 
+                        deck_repository: DeckRepositoryDependency, 
+                        sort_by: SortDecksBy = SortDecksBy.NAME,
+                        sort_direction: SortDirection = SortDirection.ASCENDING) -> list[DeckResponse]:
         query = GetAllDecksQuery(deck_repository)
-        decks = query.handle(request.state.account_id)
+        decks = query.handle(request.state.account_id, sort_by, sort_direction)
         return decks
 
 
@@ -39,9 +43,11 @@ async def get_cards_in_deck(request: Request,
                             deck_id: int,
                             page: conint(ge=0) = 0,
                             page_size: conint(ge=0) = 10,
-                            search_text: str | None = None) -> CardsPaginatedResponse:
+                            search_text: str | None = None,
+                            sort_by: SortCardsBy = SortCardsBy.DATE_ADDED,
+                            sort_direction: SortDirection = SortDirection.DESCENDING) -> CardsPaginatedResponse:
     query = GetCardsInDeckQuery(card_repository, deck_repository)
-    cards = query.handle(deck_id, request.state.account_id, page, page_size, search_text)
+    cards = query.handle(deck_id, request.state.account_id, page, page_size, search_text, sort_by, sort_direction)
     return cards
 
 

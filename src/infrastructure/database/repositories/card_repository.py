@@ -1,6 +1,7 @@
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, asc, desc, or_
 from sqlalchemy.orm import Session
-from src.domain.entities.card import Card
+from src.domain.entities import Card
+from src.domain.enums import SortCardsBy, SortDirection
 
 
 class CardRepository:
@@ -13,11 +14,11 @@ class CardRepository:
     def count_specific_in_deck(self, deck_id: int, search_text: str) -> int:
         return self.db.query(Card).filter(and_(Card.deck_id == deck_id, or_(Card.foreign_word.ilike(f"%{search_text}%"), Card.translated_word.ilike(f"%{search_text}%")))).count()
 
-    def get_several_in_deck(self, deck_id: int, offset: int, limit: int) -> list[Card]:
-        return self.db.query(Card).filter(Card.deck_id == deck_id).order_by(Card.date_added.desc()).offset(offset).limit(limit).all()
+    def get_several_in_deck(self, deck_id: int, offset: int, limit: int, sort_by: SortCardsBy, sort_direction: SortDirection) -> list[Card]:
+        return self.db.query(Card).filter(Card.deck_id == deck_id).order_by(self.__get_sort_expression(sort_by, sort_direction)).offset(offset).limit(limit).all()
     
-    def get_specific_in_deck(self, deck_id: int, offset: int, limit: int, search_text: str) -> list[Card]:
-        return self.db.query(Card).filter(and_(Card.deck_id == deck_id, or_(Card.foreign_word.ilike(f"%{search_text}%"), Card.translated_word.ilike(f"%{search_text}%")))).order_by(Card.date_added.desc()).offset(offset).limit(limit).all()
+    def get_specific_in_deck(self, deck_id: int, offset: int, limit: int, search_text: str, sort_by: SortCardsBy, sort_direction: SortDirection) -> list[Card]:
+        return self.db.query(Card).filter(and_(Card.deck_id == deck_id, or_(Card.foreign_word.ilike(f"%{search_text}%"), Card.translated_word.ilike(f"%{search_text}%")))).order_by(self.__get_sort_expression(sort_by, sort_direction)).offset(offset).limit(limit).all()
     
     def get_all_in_deck(self, deck_id: int) -> list[Card]:
         return self.db.query(Card).filter(Card.deck_id == deck_id).order_by(Card.date_added.desc()).all()
@@ -50,3 +51,13 @@ class CardRepository:
     def save_changes(self, card: Card) -> None:
         self.db.commit()
         self.db.refresh(card) 
+
+    def __get_sort_expression(self, sort_by: SortCardsBy, sort_direction: SortDirection):
+        sort_column = getattr(Card, sort_by.value)
+
+        if sort_direction == SortDirection.DESCENDING:
+            sort = desc(sort_column)
+        else:
+            sort = asc(sort_column)
+
+        return sort
