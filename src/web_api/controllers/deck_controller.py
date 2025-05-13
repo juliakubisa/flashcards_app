@@ -14,11 +14,12 @@ router = APIRouter(prefix="/decks", tags=['Decks'], dependencies=[Depends(authen
 
 @router.get("")
 async def get_all_decks(request: Request, 
-                        deck_repository: DeckRepositoryDependency, 
+                        deck_repository: DeckRepositoryDependency,
+                        search_text: str | None = None,
                         sort_by: SortDecksBy = SortDecksBy.NAME,
                         sort_direction: SortDirection = SortDirection.ASCENDING) -> list[DeckResponse]:
         query = GetAllDecksQuery(deck_repository)
-        decks = query.handle(request.state.account_id, sort_by, sort_direction)
+        decks = query.handle(request.state.account_id, search_text, sort_by, sort_direction)
         return decks
 
 
