@@ -1,12 +1,12 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import conint
-from src.application.model.input import CreateCardRequest, CreateDeckRequest
+from src.application.model.input import CreateCardRequest, CreateDeckRequest, CreateCardQuizLogRequest
 from src.application.model.output import CreateCardResponse, CreateDeckResponse, DeckResponse, CardsPaginatedResponse, QuizCardResponse
-from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand, UpdateDeckCommand
+from src.application.commands import CreateCardCommand, CreateDeckCommand, DeleteDeckCommand, CreateCardsFromFileCommand, UpdateDeckCommand, CreateCardQuizLogCommand
 from src.application.queries import GetAllDecksQuery, GetCardsInDeckQuery, GetDeckQuery, GetQuizCardsQuery
 from src.web_api.authentication_service import authenticate
-from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency
+from src.web_api.dependencies import CardRepositoryDependency, DeckRepositoryDependency, CardQuizLogRepositoryDependency
 
 
 router = APIRouter(prefix="/decks", tags=['Decks'], dependencies=[Depends(authenticate)])
@@ -106,26 +106,11 @@ async def get_quiz_cards(request: Request,
     return cards
 
 
-
-# @router.route("/decks/<deck_id>/quiz/results", methods=['PUT'])
-# def update_card_statistics(deck_id):
-#     body = request.get_json()
-#     date_now = date.today()
-
-#     # Update only the cards that were quizzed
-#     ids_to_update = [card['id'] for card in body]
-#     cards_to_update = db.session.query(Card).filter(Card.id.in_(ids_to_update)).all()
-
-#     for card in cards_to_update:
-#         # Replace the old data with the new data from quiz for each card
-#         new_data = next((data for data in body if data["id"] == card.id), None)
-
-#         card.date_last_review = date_now
-#         card.answer_time = new_data['answer_time_ms']
-#         card.last_answer_correct = new_data['last_answer_correct']
-
-#         if new_data['last_answer_correct']:
-#             card.number_correct_answers = card.number_correct_answers + 1
-
-#     db.session.commit()
-#     return "Statistics updated", 200
+# /cards/logs POST
+@router.post("/{deck_id}/quiz/results")
+async def create_card_quiz_logs(request: Request,
+                                card_quiz_log_repository: CardQuizLogRepositoryDependency,
+                                card_quiz_log: CreateCardQuizLogRequest):
+    command = CreateCardQuizLogCommand(card_quiz_log_repository)
+    id_response = command.handle(card_quiz_log, request.state.account_id)
+    return id_response

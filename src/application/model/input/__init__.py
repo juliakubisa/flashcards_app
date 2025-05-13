@@ -3,3 +3,4 @@ from .create_deck_request import CreateDeckRequest
 from .create_account_request import CreateAccountRequest
 from .create_token_request import CreateTokenRequest
 from .create_token_with_google_request import CreateTokenWithGoogleRequest
+from .create_card_quiz_log_request import CreateCardQuizLogRequest

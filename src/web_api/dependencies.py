@@ -2,7 +2,7 @@ from fastapi import Depends
 from src.infrastructure.database.database import LocalSession
 from sqlalchemy.orm import Session
 from typing import Annotated
-from src.infrastructure.database.repositories import CardRepository, DeckRepository, LanguageRepository
+from src.infrastructure.database.repositories import CardRepository, DeckRepository, LanguageRepository, CardQuizLogRepository
 from src.infrastructure.database.repositories.account_repository import AccountRepository
 from src.infrastructure.services import JWTTokenService, GoogleAuthService, ImageStorageService
 from src.web_api.settings import Settings
@@ -59,3 +59,9 @@ def create_image_storage_service() -> ImageStorageService:
     return ImageStorageService(settings.aws_access_key_id, settings.aws_secret_access_key, settings.access_token_age_seconds)
 
 ImageStorageServiceDependency = Annotated[ImageStorageService, Depends(create_image_storage_service)]
+
+# CardQuizLogRepository
+def create_card_quiz_log_repository(db_session: DatabaseSession) -> CardQuizLogRepository:
+    return CardQuizLogRepository(db_session)
+
+CardQuizLogRepositoryDependency = Annotated[CardQuizLogRepository, Depends(create_card_quiz_log_repository)]
