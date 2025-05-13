@@ -9,7 +9,7 @@ class DeckRepository:
 
     def get_all_for_account(self, account_id: int, sort_by: SortDecksBy, sort_direction: SortDirection) -> list[Deck]:
         return (self.db.query(Deck)
-                .join(Card, Deck.id == Card.deck_id)
+                .outerjoin(Card, Deck.id == Card.deck_id)
                 .group_by(Deck.id)
                 .filter(Deck.account_id == account_id)
                 .order_by(self.__get_sort_expression(sort_by, sort_direction))
@@ -17,7 +17,7 @@ class DeckRepository:
     
     def get_specific_for_account(self, account_id: int, search_text: str, sort_by: SortDecksBy, sort_direction: SortDirection) -> list[Deck]:
         return (self.db.query(Deck)
-                .join(Card, Deck.id == Card.deck_id)
+                .outerjoin(Card, Deck.id == Card.deck_id)
                 .group_by(Deck.id)
                 .filter(Deck.account_id == account_id, Deck.name.ilike(f"%{search_text}%"))
                 .order_by(self.__get_sort_expression(sort_by, sort_direction))

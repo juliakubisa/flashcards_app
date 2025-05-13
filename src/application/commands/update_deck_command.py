@@ -9,10 +9,10 @@ class UpdateDeckCommand:
 
     def handle(self, request: CreateDeckRequest, deck_id: int, account_id: int) -> None:
 
-        if request.name is None:
+        if not request.name:
             raise FieldEmptyException("Deck name is required")
         
-        if request.language_id is None:
+        if not request.language_id:
             raise FieldEmptyException("Deck language is required") 
 
         existing_deck = self.repository.get_by_id(deck_id)

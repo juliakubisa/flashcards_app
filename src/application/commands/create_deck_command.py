@@ -9,9 +9,9 @@ class CreateDeckCommand:
         self.repository = repository
 
     def handle(self, request: CreateDeckRequest, account_id: int) -> CreateDeckResponse:
-        if request.name is None:
+        if not request.name:
             raise FieldEmptyException("Deck name is required")
-        if request.language_id is None:
+        if not request.language_id:
             raise FieldEmptyException("Deck language is required")
 
         duplicate_deck = self.repository.get_by_name(request.name)
