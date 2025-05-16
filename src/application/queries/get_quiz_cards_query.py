@@ -20,7 +20,7 @@ class GetQuizCardsQuery:
         if len(all_cards) < 10:
             raise TooFewCardsException('Too few cards to quiz')
 
-        algorithm = Algorithm(all_cards, num_cards)
-        quiz_cards = algorithm.select_quiz_cards() 
+        algorithm = Algorithm()
+        quiz_cards = algorithm.select_quiz_cards(all_cards, num_cards) 
 
         return quiz_cards

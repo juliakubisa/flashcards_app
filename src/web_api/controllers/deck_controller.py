@@ -106,11 +106,13 @@ async def get_quiz_cards(request: Request,
     return cards
 
 
-# /cards/logs POST
 @router.post("/{deck_id}/quiz/results")
 async def create_card_quiz_logs(request: Request,
                                 card_quiz_log_repository: CardQuizLogRepositoryDependency,
-                                card_quiz_log: CreateCardQuizLogRequest):
-    command = CreateCardQuizLogCommand(card_quiz_log_repository)
-    id_response = command.handle(card_quiz_log, request.state.account_id)
+                                deck_repository: DeckRepositoryDependency,
+                                card_repository: CardRepositoryDependency,
+                                card_quiz_log: CreateCardQuizLogRequest,
+                                deck_id = int):
+    command = CreateCardQuizLogCommand(card_quiz_log_repository, deck_repository, card_repository)
+    id_response = command.handle(deck_id, card_quiz_log, request.state.account_id)
     return id_response
