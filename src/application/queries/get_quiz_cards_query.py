@@ -1,4 +1,4 @@
-from src.application.algorithm import Algorithm
+from src.application.algorithm.algorithm import Algorithm
 from src.application.model.output import QuizCardResponse
 from src.infrastructure.database.repositories import CardRepository, DeckRepository
 from src.domain.exceptions import TooFewCardsException, NotExistsException

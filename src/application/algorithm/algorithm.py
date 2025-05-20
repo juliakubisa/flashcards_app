@@ -27,3 +27,8 @@ class Algorithm:
             sample = random.sample(new_candidates, 3-len(wrong_answers))
             wrong_answers.extend(sample)
         return wrong_answers
+    
+    def calculate_p_recall(card: Card):
+        pass
+
+    
